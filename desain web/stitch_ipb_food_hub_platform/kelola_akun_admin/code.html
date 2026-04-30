@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kelola Akun - IPB Food Hub Admin</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container": "#ebefe9",
+                      "on-tertiary-fixed-variant": "#7a2d33",
+                      "on-secondary-container": "#6b4500",
+                      "surface-dim": "#d7dbd5",
+                      "secondary-fixed": "#ffddb4",
+                      "outline-variant": "#bec9bf",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f6fbf4",
+                      "on-tertiary-container": "#ffc9c9",
+                      "surface-container-high": "#e5e9e3",
+                      "on-primary-fixed-variant": "#00522f",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#91e9b1",
+                      "on-surface": "#181d19",
+                      "on-primary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "background": "#f6fbf4",
+                      "tertiary": "#782b31",
+                      "inverse-surface": "#2d322d",
+                      "primary": "#00502e",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#291800",
+                      "surface-variant": "#dfe4dd",
+                      "secondary": "#835500",
+                      "surface": "#f6fbf4",
+                      "primary-fixed-dim": "#81d9a2",
+                      "primary-container": "#006b3f",
+                      "surface-tint": "#046d40",
+                      "surface-container-low": "#f1f5ee",
+                      "on-primary-fixed": "#002110",
+                      "on-background": "#181d19",
+                      "inverse-on-surface": "#eef2eb",
+                      "tertiary-container": "#964247",
+                      "outline": "#6f7a71",
+                      "on-secondary-fixed-variant": "#633f00",
+                      "primary-fixed": "#9df5bd",
+                      "secondary-fixed-dim": "#ffb955",
+                      "on-tertiary-fixed": "#40010b",
+                      "tertiary-fixed-dim": "#ffb3b4",
+                      "secondary-container": "#feae2c",
+                      "tertiary-fixed": "#ffdada",
+                      "on-surface-variant": "#3f4941",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-highest": "#dfe4dd",
+                      "error": "#ba1a1a",
+                      "inverse-primary": "#81d9a2"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "24px",
+                      "gutter": "16px",
+                      "md": "16px",
+                      "base": "4px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "h2": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "button": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "h1": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "caption": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-bold": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "h3": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "h2": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "button": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "caption": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-bold": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h3": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom scrollbar for table */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5ee;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #bec9bf;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #6f7a71;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-4 w-64 border-r border-emerald-800/50 bg-emerald-950 dark:bg-slate-950 text-emerald-500 font-['Plus_Jakarta_Sans'] text-sm antialiased shadow-2xl z-50">
+<!-- Header -->
+<div class="flex items-center gap-4 mb-8 px-2">
+<div class="w-10 h-10 rounded-full bg-emerald-800 flex items-center justify-center text-white overflow-hidden shrink-0">
+<img alt="Admin Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a modern corporate admin user in a well-lit studio environment, featuring a clean neutral background. The lighting is soft and flattering, creating a polished, trustworthy appearance suitable for an enterprise software profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdXyVynySlUp12K45u-jYR50uz0E2VaelR7tsMvPru9j3iMNKit0lXW88EpvhA7R9siF7T4f_Ub_nqYPeoZgMGmEeMo5Nxa9woIw2W_QG62cZ3neuWZODJV6GYdNeES_cKdMGASpMokA1FKHdWclDUIqKLC6pnbd0Rlkdz_tfz5OYpyap4RemJBDGDBGWDawDBQzgUMvgZblX1kg3gosUSE-XIS9mTouCSPmFLsYpmgMVrFMnHDGtlKuhO26EzeUY9RCWZvu9Z-MlC"/>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight text-white">IPB Food Hub</h1>
+<p class="text-xs text-emerald-300">Admin Panel</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 flex flex-col gap-1 divide-y divide-emerald-800/30">
+<div class="pb-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 text-emerald-100/70 hover:bg-emerald-900/50 px-4 py-3 transition-all rounded-lg cursor-pointer active:scale-95 duration-200 hover:bg-emerald-800/40 hover:text-white" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-emerald-800/50 text-white font-semibold rounded-lg px-4 py-3 border-l-4 border-emerald-400 cursor-pointer active:scale-95 duration-200 hover:bg-emerald-800/40 hover:text-white" href="#">
+<span class="material-symbols-outlined fill" data-icon="manage_accounts">manage_accounts</span>
+<span>Kelola Akun</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-100/70 hover:bg-emerald-900/50 px-4 py-3 transition-all rounded-lg cursor-pointer active:scale-95 duration-200 hover:bg-emerald-800/40 hover:text-white" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span>Kelola UMKM</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-100/70 hover:bg-emerald-900/50 px-4 py-3 transition-all rounded-lg cursor-pointer active:scale-95 duration-200 hover:bg-emerald-800/40 hover:text-white" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span>Pesanan</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-100/70 hover:bg-emerald-900/50 px-4 py-3 transition-all rounded-lg cursor-pointer active:scale-95 duration-200 hover:bg-emerald-800/40 hover:text-white" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span>Laporan</span>
+</a>
+</div>
+</nav>
+<!-- Footer Links -->
+<div class="mt-auto pt-4 border-t border-emerald-800/30 flex flex-col gap-1">
+<a class="flex items-center gap-3 text-emerald-100/70 hover:bg-emerald-900/50 px-4 py-3 transition-all rounded-lg cursor-pointer active:scale-95 duration-200 hover:bg-emerald-800/40 hover:text-white" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Bantuan</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-100/70 hover:bg-emerald-900/50 px-4 py-3 transition-all rounded-lg cursor-pointer active:scale-95 duration-200 hover:bg-emerald-800/40 hover:text-white text-red-400 hover:text-red-300" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Keluar</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full flex justify-between items-center h-16 px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-emerald-700 dark:text-emerald-400 font-['Plus_Jakarta_Sans'] font-medium text-slate-700 border-b border-slate-200 dark:border-slate-800 shadow-sm z-40 transition-all duration-300 ease-in-out">
+<div class="flex items-center">
+<h2 class="text-lg font-extrabold text-emerald-800">Kelola Akun Pengguna</h2>
+</div>
+<div class="flex items-center gap-2">
+<!-- Search (Mobile hidden, shown in header for larger screens as requested in prompt, though JSON said on_left, we merge prompt requirements here if possible, but JSON says on_left. I'll put it on left) -->
+<!-- Prompt says: Header Row: Search bar. So I'll put it in the main content header row to satisfy the detailed layout prompt, but keep TopAppBar clean as per standard Material. Actually, I'll follow the prompt's layout for Main Content Area. -->
+<button class="hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full p-2 transition-colors text-slate-500 hover:text-emerald-600">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full p-2 transition-colors text-slate-500 hover:text-emerald-600">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full p-2 transition-colors text-slate-500 hover:text-emerald-600">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="ml-4 w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Admin User" class="w-full h-full object-cover" data-alt="A small circular avatar image showing the face of a professional administrative user. The portrait is sharply focused with a neutral expression, set against a soft, bright background that fits a clean, modern UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfWviGlulyB9KEKleC22Zs_NM9uhEZEGVDN-_MbAPM8DrGHfEp2DtTfrKHKLal6nZo-Qu2P58VG1-uJpTiMBvMkYJM0zU6koyhGs4x081eF2UEX7DHtTsEzzLD54zCsYWYxXc2dfY8BhdrAMRicIGeQQsAt7bUH_YpaR3VhvVYJa_emkN2vNsgGjdLCP0jMmE_S-gm3_LDH5M7yUx_DSN8J33nv2bvT5OBNBihReMrGa1CdKA9Jlq0Vgzqkt6cdu6wa8_AgGPfoqw6"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-margin-desktop flex-1 flex flex-col gap-lg max-w-7xl w-full mx-auto">
+<!-- Action Bar -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-outline-variant/30">
+<div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+<!-- Search Bar -->
+<div class="relative w-full sm:w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-outline/70" placeholder="Cari nama, email..." type="text"/>
+</div>
+<!-- Filter Dropdown -->
+<div class="relative w-full sm:w-48">
+<select class="w-full pl-4 pr-10 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-body-md appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface">
+<option value="">Semua Role</option>
+<option value="mahasiswa">Mahasiswa</option>
+<option value="umkm">UMKM</option>
+<option value="admin">Admin</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<!-- Export Button -->
+<button class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-surface-container-lowest border border-primary text-primary rounded-lg font-button hover:bg-surface-container-low transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Export CSV
+                </button>
+</div>
+<!-- Data Table Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col flex-1 border border-outline-variant/20">
+<div class="overflow-x-auto custom-scrollbar flex-1">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead>
+<tr class="border-b border-outline-variant/50 bg-surface-container/50">
+<th class="py-4 px-6 font-label-bold text-on-surface-variant w-16">Profil</th>
+<th class="py-4 px-6 font-label-bold text-on-surface-variant">Nama</th>
+<th class="py-4 px-6 font-label-bold text-on-surface-variant">Email</th>
+<th class="py-4 px-6 font-label-bold text-on-surface-variant w-32">Role</th>
+<th class="py-4 px-6 font-label-bold text-on-surface-variant w-32">Status</th>
+<th class="py-4 px-6 font-label-bold text-on-surface-variant w-40">Tanggal Daftar</th>
+<th class="py-4 px-6 font-label-bold text-on-surface-variant w-16 text-center">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30 text-body-md text-on-surface">
+<!-- Row 1: Mahasiswa -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-3 px-6">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary font-bold text-sm">
+                                        AR
+                                    </div>
+</td>
+<td class="py-3 px-6 font-medium">Ahmad Rizky</td>
+<td class="py-3 px-6 text-on-surface-variant">ahmad.rizky@apps.ipb.ac.id</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium bg-blue-100 text-blue-800">
+                                        Mahasiswa
+                                    </span>
+</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-on-surface-variant">Aktif</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant text-sm">12 Okt 2023</td>
+<td class="py-3 px-6 text-center">
+<button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: UMKM -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-3 px-6">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed overflow-hidden">
+<img alt="Vendor Avatar" class="w-full h-full object-cover" data-alt="A portrait of a friendly small business owner smiling softly. The lighting is warm and natural, suggesting a reliable and welcoming vendor within a modern digital platform. The background is slightly blurred to keep focus on the subject's face." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAucwJhdi-Eck4iPhgRDO3DJsdlvmHJe_4QRVt7XdBL6IDMTdvvPv90fTTmlvsyMFlL6sJRBXvTSm0FfmnuszbAcR-Dq0lrzS-rDcmIfzWWRX0k8Qw3el5SUCvJIC-K949JGg5L5O45UVfh1wGyfnKgZEhvtftTRGP2l6rzOyWUAD7VqGgNdv9AHgCIdRIu0S1GyyelTMks_4Wf2Ta_YTHE0l1xQe_46ZrmqetrN8eRGMsa8SUGO1bVjcpNU7OUMqdjp5fG5Ec-hZzs"/>
+</div>
+</td>
+<td class="py-3 px-6 font-medium">Budi Santoso</td>
+<td class="py-3 px-6 text-on-surface-variant">warungbudi.ipb@gmail.com</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium bg-orange-100 text-orange-800">
+                                        UMKM
+                                    </span>
+</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-on-surface-variant">Aktif</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant text-sm">05 Sep 2023</td>
+<td class="py-3 px-6 text-center">
+<button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Admin -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-3 px-6">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-sm">
+                                        DA
+                                    </div>
+</td>
+<td class="py-3 px-6 font-medium">Dina Amelia</td>
+<td class="py-3 px-6 text-on-surface-variant">dina.admin@ipb.ac.id</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium bg-green-100 text-green-800">
+                                        Admin
+                                    </span>
+</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-on-surface-variant">Aktif</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant text-sm">01 Jan 2023</td>
+<td class="py-3 px-6 text-center">
+<button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4: Suspended Mahasiswa -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group bg-error-container/10">
+<td class="py-3 px-6">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-bold text-sm">
+                                        FK
+                                    </div>
+</td>
+<td class="py-3 px-6 font-medium text-on-surface/70">Faisal Kurniawan</td>
+<td class="py-3 px-6 text-on-surface-variant/70">faisal.k@apps.ipb.ac.id</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium bg-blue-100 text-blue-800 opacity-70">
+                                        Mahasiswa
+                                    </span>
+</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="text-error font-medium">Suspended</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant/70 text-sm">20 Nov 2023</td>
+<td class="py-3 px-6 text-center">
+<button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5: UMKM -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-3 px-6">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed overflow-hidden">
+<img alt="Vendor Avatar 2" class="w-full h-full object-cover" data-alt="A portrait of a female vendor smiling confidently. The lighting is bright and even, creating a clean, modern aesthetic suitable for a high-quality dashboard interface. The subject is centered and clearly defined against a subtle background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1e42NIPOm_zNiTeVhy5TGwav1vN_Q-ZaclC7FICxO9T2WQ8dR5fjjCZYlLPaIbXczxOe_LeSpZRvK3NN4W0J38Z4F80jz1ZEy2yxLXOpr1xvZyvxo3AkL9JtjngcbkF9FRLT8XZM9NZcS-Dk-3c9mLtGBahvX6TmvkvS6mFbzEbF_cCezH6OQVtgNai_yPKN7EnmdbgtPG4lBmchg99LxJZEyb0vq1-aHHYUW5967hb0XmTfQGTKV9OiEiXEEc3l_JWHYg3Z9Vaeb"/>
+</div>
+</td>
+<td class="py-3 px-6 font-medium">Siti Rahmawati</td>
+<td class="py-3 px-6 text-on-surface-variant">dapur.siti@gmail.com</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium bg-orange-100 text-orange-800">
+                                        UMKM
+                                    </span>
+</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-on-surface-variant">Aktif</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant text-sm">15 Aug 2023</td>
+<td class="py-3 px-6 text-center">
+<button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Filler rows for standard 10 rows appearance -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-3 px-6"><div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-sm font-bold text-on-surface-variant">GH</div></td>
+<td class="py-3 px-6 font-medium">Gilang Herdian</td>
+<td class="py-3 px-6 text-on-surface-variant">gilang.h@apps.ipb.ac.id</td>
+<td class="py-3 px-6"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium bg-blue-100 text-blue-800">Mahasiswa</span></td>
+<td class="py-3 px-6"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500"></div><span class="text-on-surface-variant">Aktif</span></div></td>
+<td class="py-3 px-6 text-on-surface-variant text-sm">02 Dec 2023</td>
+<td class="py-3 px-6 text-center"><button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"><span class="material-symbols-outlined">more_vert</span></button></td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-3 px-6"><div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-sm font-bold text-on-surface-variant">IL</div></td>
+<td class="py-3 px-6 font-medium">Irma Lestari</td>
+<td class="py-3 px-6 text-on-surface-variant">irma.lestari@apps.ipb.ac.id</td>
+<td class="py-3 px-6"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium bg-blue-100 text-blue-800">Mahasiswa</span></td>
+<td class="py-3 px-6"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500"></div><span class="text-on-surface-variant">Aktif</span></div></td>
+<td class="py-3 px-6 text-on-surface-variant text-sm">10 Dec 2023</td>
+<td class="py-3 px-6 text-center"><button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"><span class="material-symbols-outlined">more_vert</span></button></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="border-t border-outline-variant/30 bg-surface-container-lowest px-6 py-4 flex items-center justify-between flex-wrap gap-4">
+<p class="text-sm text-on-surface-variant font-medium">
+                        Showing <span class="font-bold text-on-surface">1-10</span> of <span class="font-bold text-on-surface">1,234</span>
+</p>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-md border border-outline-variant/50 text-outline hover:bg-surface-container hover:text-on-surface transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md bg-primary text-on-primary font-medium text-sm transition-colors">
+                            1
+                        </button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-medium text-sm">
+                            2
+                        </button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-medium text-sm">
+                            3
+                        </button>
+<span class="w-8 h-8 flex items-center justify-center text-outline text-sm">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-md border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-medium text-sm">
+                            124
+                        </button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md border border-outline-variant/50 text-outline hover:bg-surface-container hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

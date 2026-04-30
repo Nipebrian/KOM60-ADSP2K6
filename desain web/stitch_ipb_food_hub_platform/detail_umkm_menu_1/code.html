@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warung Nasi Padang Minang - IPB Food Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#ffc9c9",
+                        "primary-fixed": "#9df5bd",
+                        "outline": "#6f7a71",
+                        "on-secondary-container": "#6b4500",
+                        "on-primary-container": "#91e9b1",
+                        "on-tertiary-fixed-variant": "#7a2d33",
+                        "surface-container-highest": "#dfe4dd",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e5e9e3",
+                        "tertiary-fixed-dim": "#ffb3b4",
+                        "secondary-container": "#feae2c",
+                        "tertiary-container": "#964247",
+                        "surface-tint": "#046d40",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eef2eb",
+                        "on-surface": "#181d19",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#dfe4dd",
+                        "surface": "#f6fbf4",
+                        "on-secondary-fixed": "#291800",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f1f5ee",
+                        "secondary-fixed": "#ffddb4",
+                        "secondary": "#835500",
+                        "inverse-primary": "#81d9a2",
+                        "on-background": "#181d19",
+                        "inverse-surface": "#2d322d",
+                        "on-error": "#ffffff",
+                        "tertiary": "#782b31",
+                        "primary-fixed-dim": "#81d9a2",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffb955",
+                        "primary-container": "#006b3f",
+                        "on-primary-fixed": "#002110",
+                        "on-primary-fixed-variant": "#00522f",
+                        "on-tertiary-fixed": "#40010b",
+                        "tertiary-fixed": "#ffdada",
+                        "surface-container": "#ebefe9",
+                        "primary": "#00502e",
+                        "background": "#f6fbf4",
+                        "surface-dim": "#d7dbd5",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bec9bf",
+                        "surface-bright": "#f6fbf4",
+                        "on-surface-variant": "#3f4941",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "xs": "4px",
+                        "margin-desktop": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "button": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "label-bold": ["Plus Jakarta Sans"],
+                        "h3": ["Plus Jakarta Sans"],
+                        "h1": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "h2": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "button": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "label-bold": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "h3": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "h1": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col relative pb-32">
+<!-- TopNavBar (Shared Component) -->
+<nav class="bg-white/95 backdrop-blur-md font-['Plus_Jakarta_Sans'] text-sm antialiased docked full-width top-0 sticky z-50 border-b border-surface-container shadow-sm flex justify-between items-center w-full px-4 md:px-8 h-16 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<div class="text-xl font-extrabold tracking-tight text-primary">IPB Food Hub</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+</button>
+<img alt="User avatar" class="w-8 h-8 rounded-full border border-surface-container" data-alt="A small circular avatar image of a professional looking individual, used as a profile picture placeholder in a modern light-mode user interface. The image is clean and well-lit." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZXrJboIciJ5qpMmXHCN40OmclE56u_mG9PAa4Hd25gllfincR9ludciwlappLWGzn2G5nVFoezSIgTVAYjIyCLFwaYi81LjeuGYni4FMTrWyK1bo7fPQX9OIdd4Ub6mRNFes50h8ASVYyGjXLnLeds0xRS_9R0qAXxZhX5G9QE8gYAbLqlx2rTXgvcAtkY5eTonb1CZXo10ebQSqd9npOHTExHy_BBBI6-VGScm-k-0Fin-selOyAjsmzD2Kny_MiSv4j15X6wKHA"/>
+</div>
+</nav>
+<main class="flex-grow max-w-screen-xl mx-auto w-full">
+<!-- Hero Section -->
+<section class="relative bg-surface">
+<div class="h-[300px] w-full rounded-b-[32px] overflow-hidden relative">
+<img alt="Nasi Padang Banner" class="w-full h-full object-cover" data-alt="A wide hero banner image showcasing a delicious spread of Nasi Padang. The food is vibrant and appetizing, laid out on a traditional table setting. The lighting is bright and inviting, perfect for a modern food delivery app light-mode aesthetic. The image conveys freshness and authentic Indonesian culinary culture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_SvHH8I6D0H9b4qGd3pV-_6crxxERhqpXh1KSPbwCuL76HGc7ZGlHq4rRSQl3GGw5DzbEsTYznOYQisedJ1rL_1vVSMssIeFdx8gsseirWAh0hpNVoQYJhsn25MhFhRrLGYgyZh4hyVmoOt5dJ32knNnEmIWBLkZFXeHLCnUiodOwgfuWG8_Y4QcyqoxR0jFp2GdnL-8_wtqwQZXziA-MdmSA2Q77rygeoHK2UJQwJiMGahFHyvUzo-GI0XJFKybJ7rCq-ys86sq5"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+</div>
+<!-- Overlapping Info Card -->
+<div class="relative -mt-24 px-4 md:px-8 max-w-4xl mx-auto">
+<div class="bg-surface-container-lowest rounded-[24px] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-surface-container">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="bg-primary-container/10 text-primary font-label-bold px-3 py-1 rounded-full text-[12px]">Makanan Berat</span>
+<div class="flex items-center gap-1 text-secondary-container">
+<span class="material-symbols-outlined text-[16px]" data-weight="fill">star</span>
+<span class="font-label-bold">4.8</span>
+<span class="text-on-surface-variant font-caption">(2.4k Ulasan)</span>
+</div>
+</div>
+<h1 class="font-h1 text-on-surface mb-2">Warung Nasi Padang Minang</h1>
+<div class="flex flex-wrap items-center gap-4 text-on-surface-variant font-body-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Kantin Sapta, Fakultas Pertanian</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
+<span class="text-primary font-label-bold">Buka</span>
+<span>· 08:00 - 21:00</span>
+</div>
+</div>
+</div>
+<button class="w-full md:w-auto flex items-center justify-center gap-2 bg-white border border-outline-variant text-on-surface font-button px-6 py-3 rounded-xl hover:bg-surface-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">share</span>
+                            Bagikan
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Content Area -->
+<div class="px-4 md:px-8 mt-lg max-w-4xl mx-auto flex flex-col md:flex-row gap-lg">
+<!-- Main Content (Left on Desktop) -->
+<div class="flex-grow w-full md:w-2/3">
+<!-- Tab Navigation -->
+<div class="flex border-b border-surface-container mb-md">
+<button class="font-label-bold text-primary border-b-2 border-primary pb-3 px-4 transition-colors">Menu</button>
+<button class="font-label-bold text-on-surface-variant hover:text-on-surface pb-3 px-4 transition-colors">Ulasan</button>
+<button class="font-label-bold text-on-surface-variant hover:text-on-surface pb-3 px-4 transition-colors">Promo</button>
+</div>
+<!-- Horizontal Pill Filters -->
+<div class="flex gap-3 overflow-x-auto pb-4 mb-md hide-scrollbar">
+<button class="whitespace-nowrap bg-primary text-on-primary font-button px-5 py-2 rounded-full shadow-sm">Semua</button>
+<button class="whitespace-nowrap bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-button px-5 py-2 rounded-full hover:bg-surface-container transition-colors">Nasi</button>
+<button class="whitespace-nowrap bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-button px-5 py-2 rounded-full hover:bg-surface-container transition-colors">Lauk</button>
+<button class="whitespace-nowrap bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-button px-5 py-2 rounded-full hover:bg-surface-container transition-colors">Minuman</button>
+</div>
+<!-- Menu List -->
+<div class="flex flex-col gap-4">
+<!-- Menu Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 flex gap-4 border border-surface-container shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
+<img alt="Nasi Rendang" class="w-24 h-24 rounded-lg object-cover" data-alt="A close up square shot of a plate of Nasi Rendang. The rich, dark brown rendang meat sits atop a bed of white rice, garnished with vibrant green cassava leaves. The setting is bright and clean, fitting a premium food delivery app aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfcd-KzuoJ-C3xFkBvPUDmYT3ed2D4pr2QffSHXqNpYnGuA5_5BmoFpnnj1oyX6RmV3MGuaoMZziXPyDPcwgKo48SNdDVM4U3VbwM9Hy4VKZi0RpTwEwOwGk9mVKp6s6DLH2XXRdkivo8fDmVwGfQMS46e402LUl_Eqeo4hI_z7-VOnluPCBtCVehOAyQ1p5DEQ93NMt9aqVL_qKfJZwjApYwLjQR_Zz7Ddx_cxLKJAKmwPxXjrN4COcRMnWm4nTZcFgaDCvE-yR9H"/>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-h3 text-on-surface mb-1">Nasi Rendang Sapi</h3>
+<p class="font-caption text-on-surface-variant line-clamp-2">Nasi putih hangat disajikan dengan rendang sapi empuk bumbu khas Minang, daun singkong rebus, sambal ijo, dan kuah gulai.</p>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="font-label-bold text-primary text-[16px]">Rp 22.000</span>
+<button class="w-8 h-8 rounded-full bg-primary-container/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Menu Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 flex gap-4 border border-surface-container shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
+<img alt="Nasi Ayam Bakar" class="w-24 h-24 rounded-lg object-cover" data-alt="A square image of Nasi Ayam Bakar. A perfectly grilled piece of chicken with dark char marks is plated with white rice and a side of fresh cucumber and sambal. Bright, clean lighting highlights the appetizing textures for a modern food menu interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk26wcrFR8UM-mkN5T62umFSxHuEwwXuMvcDB7xgrzLfhyXCOuGZTRjZ9mk4U1uwxsdcFZ-0XITX3zRBEEe6OHZ5-Ma2X2QYLcsb1p-kNpmycsHIbsVhHTZuPFPfca95LRbNJf47WHxtggVo1te9480jPkX2LoJIh6_jqf1x_A-F_5iQN2Mv6gD6LRT4J-6aMC-H6fl8Co56zNcPlTcr4xrkK3BhaOE1jIo9TE6nW37eJZoFsvyecx_V6rSHCWofddEBPDs8987oK5"/>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-h3 text-on-surface mb-1">Nasi Ayam Bakar</h3>
+<p class="font-caption text-on-surface-variant line-clamp-2">Nasi putih dengan ayam bakar bumbu rujak pedas manis, lengkap dengan lalapan segar dan sambal terasi.</p>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="font-label-bold text-primary text-[16px]">Rp 20.000</span>
+<button class="w-8 h-8 rounded-full bg-primary-container/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Menu Item 3 (Habis) -->
+<div class="bg-surface-container-low rounded-xl p-4 flex gap-4 border border-surface-container opacity-60 grayscale">
+<img alt="Nasi Tunjang" class="w-24 h-24 rounded-lg object-cover" data-alt="A square photo of Nasi Tunjang, a traditional Indonesian dish. The image is styled for a food menu, showing the rich, gelatinous beef tendon in a spicy curry sauce with rice. However, the styling suggests it is currently unavailable, appearing slightly muted in the UI context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8NzVaJyZvwjRzGkg5CtyhUgYTLkzvFwB6Sb5Cq46fVGMXOWhfvg6Wts1tD8lY22fznMeeQb9TlFcHRqr45WK1dSSjh2REN0y2O1qgK4pNpKu5ULMbYNY7-cb7Ge696OXN3k02vaiuP_qs5DVmzhARuI6cfDRqwNpyztlBrkLUMK6YtEvAb7TkJU8WMcqjozcAxsagBBppx396WJGfq_qsAWQecZYj3L89revUOjRmGPCxWJwIio7z1fX4wp6frosJ1Uwk2PIkwfGR"/>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-h3 text-on-surface mb-1">Nasi Kikil (Tunjang)</h3>
+<p class="font-caption text-on-surface-variant line-clamp-2">Nasi putih dengan gulai kikil sapi yang lembut dan kaya rempah, disajikan dengan daun singkong dan sambal ijo.</p>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="font-label-bold text-on-surface-variant text-[16px]">Rp 25.000</span>
+<span class="font-caption text-error bg-error-container px-2 py-1 rounded">Habis</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Info (Right on Desktop) -->
+<div class="w-full md:w-1/3 hidden md:flex flex-col gap-md">
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-surface-container shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+<h3 class="font-h3 text-on-surface mb-4">Informasi Warung</h3>
+<div class="space-y-4 text-body-md text-on-surface-variant">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[20px] text-primary mt-0.5">storefront</span>
+<div>
+<p class="font-label-bold text-on-surface">Dikelola oleh</p>
+<p>Ibu Minarni</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[20px] text-primary mt-0.5">verified_user</span>
+<div>
+<p class="font-label-bold text-on-surface">Status UMKM</p>
+<p>Terverifikasi IPB Food Hub</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Cart Bar -->
+<div class="fixed bottom-0 left-0 right-0 p-4 z-50 bg-gradient-to-t from-white via-white to-transparent pointer-events-none">
+<div class="max-w-4xl mx-auto pointer-events-auto">
+<div class="bg-primary text-on-primary rounded-xl p-4 flex justify-between items-center shadow-[0_-4px_16px_rgba(0,80,46,0.2)] hover:bg-[#004a2a] transition-colors cursor-pointer">
+<div>
+<div class="font-caption opacity-90">Total Pesanan</div>
+<div class="flex items-center gap-2">
+<span class="font-label-bold">3 item</span>
+<span class="w-1 h-1 bg-on-primary rounded-full opacity-50"></span>
+<span class="font-label-bold text-[16px]">Rp 45.000</span>
+</div>
+</div>
+<div class="flex items-center gap-2 font-button">
+                    Lihat Keranjang
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IPB Food Hub - Direktori UMKM</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#feae2c",
+                        "tertiary-container": "#964247",
+                        "surface-tint": "#046d40",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eef2eb",
+                        "on-surface": "#181d19",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#dfe4dd",
+                        "on-tertiary-container": "#ffc9c9",
+                        "primary-fixed": "#9df5bd",
+                        "outline": "#6f7a71",
+                        "on-tertiary-fixed-variant": "#7a2d33",
+                        "on-secondary-container": "#6b4500",
+                        "on-primary-container": "#91e9b1",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "surface-container-highest": "#dfe4dd",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb3b4",
+                        "surface-container-high": "#e5e9e3",
+                        "secondary-fixed-dim": "#ffb955",
+                        "primary-container": "#006b3f",
+                        "on-primary-fixed": "#002110",
+                        "tertiary": "#782b31",
+                        "primary-fixed-dim": "#81d9a2",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#40010b",
+                        "on-primary-fixed-variant": "#00522f",
+                        "tertiary-fixed": "#ffdada",
+                        "surface-container": "#ebefe9",
+                        "primary": "#00502e",
+                        "background": "#f6fbf4",
+                        "surface-dim": "#d7dbd5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#f6fbf4",
+                        "outline-variant": "#bec9bf",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#3f4941",
+                        "surface": "#f6fbf4",
+                        "on-secondary-fixed": "#291800",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f1f5ee",
+                        "secondary-fixed": "#ffddb4",
+                        "secondary": "#835500",
+                        "inverse-primary": "#81d9a2",
+                        "on-background": "#181d19",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2d322d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "margin-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "button": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "label-bold": ["Plus Jakarta Sans"],
+                        "h3": ["Plus Jakarta Sans"],
+                        "h1": ["Plus Jakarta Sans"],
+                        "h2": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "button": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopAppBar Component -->
+<header class="bg-surface-container-lowest text-primary-container font-['Plus_Jakarta_Sans'] antialiased border-b border-outline-variant shadow-sm flex justify-between items-center w-full px-4 md:px-8 h-16 sticky top-0 z-50">
+<div class="flex items-center gap-md">
+<span class="text-xl font-extrabold tracking-tight text-primary-container">IPB Food Hub</span>
+</div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-200 cursor-pointer active:scale-95 px-md py-sm rounded-lg font-button" href="#">Home</a>
+<a class="text-primary-container border-b-2 border-primary-container cursor-pointer active:scale-95 px-md py-sm font-button" href="#">Directory</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-200 cursor-pointer active:scale-95 px-md py-sm rounded-lg font-button" href="#">Orders</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="p-sm text-on-surface-variant hover:bg-surface-container rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+<img alt="Student Profile" class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A close-up profile portrait of a confident young student with short dark hair, wearing a casual light-colored shirt, set against a clean, softly blurred light grey background. The lighting is soft and natural, emphasizing a modern, fresh, and professional appearance suitable for a university app profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDeXFY9ssl0iUldx1D8MgeWRK3d1Y1JMePYsK_WUbnkMAEQt5O-npqr4KNmGY-aUiDMkfyuHGSeUJcwMxT8fWy8x-yAcAYAof_mY1nvG98FOZVxJIkJlV6jJ3Bp4Qx06axekPjJq9T9vFS3TOmFM-Tcvcoe5YdZoHyv5wdDITJ_2HnI7G8GmJqF_KyLLvlqaqrx44DkwkrNcwZ-OTZkKGk3ALTgznBUqFfgu8VGzlKg9wp72eyTS0kcAR05LhhSldlRmYaccTREOue"/>
+</div>
+</header>
+<main class="flex-grow flex w-full max-w-7xl mx-auto px-4 md:px-8 py-lg gap-lg">
+<!-- Left Sidebar Filter -->
+<aside class="hidden lg:flex flex-col w-64 flex-shrink-0 gap-md h-fit sticky top-[88px]">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-md border border-outline-variant">
+<div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-sm">
+<span class="material-symbols-outlined text-primary">filter_list</span>
+<h2 class="font-h3 text-on-surface">Filters</h2>
+</div>
+<!-- Kategori -->
+<div class="mb-lg">
+<h3 class="font-label-bold text-on-surface mb-sm">Kategori</h3>
+<div class="flex flex-col gap-sm">
+<label class="flex items-center gap-sm cursor-pointer">
+<input class="rounded border-outline text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="font-body-md text-on-surface-variant">Makanan Berat</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer">
+<input class="rounded border-outline text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="font-body-md text-on-surface-variant">Minuman</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer">
+<input class="rounded border-outline text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="font-body-md text-on-surface-variant">Snack</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer">
+<input class="rounded border-outline text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="font-body-md text-on-surface-variant">Dessert</span>
+</label>
+</div>
+</div>
+<!-- Status -->
+<div class="mb-lg">
+<h3 class="font-label-bold text-on-surface mb-sm">Status</h3>
+<div class="flex flex-col gap-sm">
+<label class="flex items-center gap-sm cursor-pointer">
+<input checked="" class="border-outline text-primary focus:ring-primary h-4 w-4" name="status" type="radio"/>
+<span class="font-body-md text-on-surface-variant">Semua</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer">
+<input class="border-outline text-primary focus:ring-primary h-4 w-4" name="status" type="radio"/>
+<span class="font-body-md text-on-surface-variant">Buka Sekarang</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer">
+<input class="border-outline text-primary focus:ring-primary h-4 w-4" name="status" type="radio"/>
+<span class="font-body-md text-on-surface-variant">Tutup</span>
+</label>
+</div>
+</div>
+<!-- Rating -->
+<div class="mb-lg">
+<h3 class="font-label-bold text-on-surface mb-sm">Rating</h3>
+<div class="flex items-center gap-xs text-secondary-container">
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined cursor-pointer text-outline-variant hover:text-secondary-fixed">star</span>
+<span class="text-caption text-on-surface-variant ml-sm">&amp; Up</span>
+</div>
+</div>
+<!-- Lokasi -->
+<div class="mb-lg">
+<h3 class="font-label-bold text-on-surface mb-sm">Lokasi</h3>
+<select class="w-full rounded-lg border-outline-variant bg-surface-container-low text-on-surface font-body-md focus:border-primary focus:ring-1 focus:ring-primary">
+<option>Semua Lokasi</option>
+<option>Kantin Sapta Marga</option>
+<option>Kantin FEM</option>
+<option>Kantin Stevia</option>
+</select>
+</div>
+<button class="w-full bg-primary hover:bg-[#005432] text-on-primary font-button rounded-lg py-sm transition-colors duration-200">
+                    Terapkan Filter
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<section class="flex-grow flex flex-col min-w-0">
+<!-- Breadcrumbs & Heading -->
+<div class="mb-lg">
+<nav aria-label="Breadcrumb" class="flex text-caption text-on-surface-variant mb-sm">
+<ol class="inline-flex items-center space-x-1 md:space-x-3">
+<li class="inline-flex items-center">
+<a class="inline-flex items-center hover:text-primary" href="#">Home</a>
+</li>
+<li>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-[16px] mx-1">chevron_right</span>
+<span class="text-on-surface">Direktori UMKM</span>
+</div>
+</li>
+</ol>
+</nav>
+<h1 class="font-h1 text-on-surface">Direktori UMKM</h1>
+</div>
+<!-- Toolbar -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-lg gap-md">
+<span class="font-body-md text-on-surface-variant">Menampilkan 24 UMKM</span>
+<div class="flex items-center gap-sm">
+<span class="font-body-md text-on-surface-variant">Sort by:</span>
+<select class="rounded-lg border-outline-variant bg-surface-container-lowest text-on-surface font-body-md focus:border-primary focus:ring-1 focus:ring-primary py-1 pl-3 pr-8">
+<option>Terpopuler</option>
+<option>Rating Tertinggi</option>
+<option>Terbaru</option>
+</select>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-md lg:gap-lg mb-xl">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-surface-variant hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-shadow duration-300 flex flex-col group cursor-pointer">
+<div class="h-48 w-full relative overflow-hidden">
+<img alt="Ayam Geprek" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant, top-down shot of a delicious portion of Indonesian Ayam Geprek (smashed fried chicken with sambal), served with white rice and fresh cucumber slices on a simple ceramic plate. The scene is brightly lit with warm, appetizing light on a clean, light-colored wooden table, conveying a fresh and satisfying meal option." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQuSAKbrMUUXa8MNNdGbgQcyXatXYU6YV9q8IypTiC6hqfNHIgQL_k-y-yyHL7RtJb148pS0WAlQd-Ecn7Sm3s1J2JHhwzsrg2dI474cVch_7iNWPtsIf9_KWRAT9M5fQ2gokveNJ_b43iZ_hHsWI3_so7RYCou5dpoHEGXMXIniyXPONuIOPV3PtvcGSUjne9-8OkCkBSSqEZkFfH3rvqsdZqeAkaFAvuFJXXOH8FIXR6KyYvJZ-mX5a90v_-dExTxaPMTpqCSsHO"/>
+<div class="absolute top-sm right-sm bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-bold text-on-surface text-xs">4.8</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-h3 text-on-surface truncate pr-2">Ayam Geprek Bu Rum</h3>
+<span class="bg-[#9df5bd]/20 text-primary-container text-[10px] font-bold px-2 py-1 rounded-full border border-primary-fixed-dim whitespace-nowrap">Buka</span>
+</div>
+<p class="font-caption text-on-surface-variant flex items-center gap-1 mb-sm">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Kantin Sapta Marga
+                        </p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container border border-outline-variant text-on-surface-variant text-xs px-2 py-1 rounded-full">Makanan Berat</span>
+<span class="bg-surface-container border border-outline-variant text-on-surface-variant text-xs px-2 py-1 rounded-full">Spicy</span>
+</div>
+<div class="mt-auto pt-md border-t border-surface-variant flex items-center justify-between text-caption text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span> 08:00 - 21:00</span>
+<span class="font-label-bold text-primary">Lihat Menu</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-surface-variant hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-shadow duration-300 flex flex-col group cursor-pointer">
+<div class="h-48 w-full relative overflow-hidden">
+<img alt="Es Teh Kampus" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A refreshing, frosty glass of iced tea with lemon slices and mint leaves, glistening with condensation. It sits on a bright, minimalist white cafe table with soft, natural daylight streaming in, creating long, crisp shadows. The aesthetic is clean, modern, and highly appetizing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1m5H4rT6dfp7THalnXMvxLPVg-ILGCImQidFMjgfC942okQQ9-L65wQHpgHbUFMWNtSjCnSfvaKhl8x47he0S_AEnxU9uAD2j1scrnUAg3hbJSknPtd3GHp0w8CbBcrDeQHN3ukwOjhjC27z0XQT8kiJUkw_fwKDYzTMtZcoyCJhEB2v8yxrfqmi6mfEu0AiZVgXfznVmucCQ7o3BEwHsnP564NMzFcckH2vrnmLYhAIFVAYEBIEK2JdoK_T2gvUY5KcSyoF0rnAq"/>
+<div class="absolute top-sm right-sm bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-bold text-on-surface text-xs">4.6</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-h3 text-on-surface truncate pr-2">Es Teh Kampus</h3>
+<span class="bg-[#9df5bd]/20 text-primary-container text-[10px] font-bold px-2 py-1 rounded-full border border-primary-fixed-dim whitespace-nowrap">Buka</span>
+</div>
+<p class="font-caption text-on-surface-variant flex items-center gap-1 mb-sm">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Kantin FEM
+                        </p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container border border-outline-variant text-on-surface-variant text-xs px-2 py-1 rounded-full">Minuman</span>
+<span class="bg-surface-container border border-outline-variant text-on-surface-variant text-xs px-2 py-1 rounded-full">Dingin</span>
+</div>
+<div class="mt-auto pt-md border-t border-surface-variant flex items-center justify-between text-caption text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span> 09:00 - 18:00</span>
+<span class="font-label-bold text-primary">Lihat Menu</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-surface-variant hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-shadow duration-300 flex flex-col group cursor-pointer opacity-75">
+<div class="h-48 w-full relative overflow-hidden">
+<div class="absolute inset-0 bg-surface-variant/40 z-10"></div>
+<img alt="Nasi Goreng" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 grayscale-[20%]" data-alt="A comforting plate of Indonesian Nasi Goreng (fried rice) topped with a sunny-side-up egg, accompanied by prawn crackers and pickles. The setting is slightly dim but warm, suggesting evening dining in a cozy, modern food hub environment. The colors are rich earthy browns and bright whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxTuHP817zf8WoRgOo0bMBuvj0J5KU9H8jmSGE5ad8LDZa5OKwBr_ff_KulTHtgmbH0sqxUk6YgYyjDVmKW1KsWMo1J9zVksf5TxpvNpaDsPjq-xTPI7dMgy46Zm1QTMGwU_zDHktM9ezAsDSSSLiOFuK0wvjTnXl_ScLwNbk6CnXeN85Bx7epxRPn6tp_6Nfbv4ycnlhviuSF9yuOSdu-pencCkDUmI0mKLu3a2amGFBS2eB5DHsON9sh6SeAclIO6xbdJD58y-gC"/>
+<div class="absolute top-sm right-sm z-20 bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-bold text-on-surface text-xs">4.9</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-h3 text-on-surface truncate pr-2">Nasgor Pak Min</h3>
+<span class="bg-error-container text-error text-[10px] font-bold px-2 py-1 rounded-full border border-[#ffb3b4] whitespace-nowrap">Tutup</span>
+</div>
+<p class="font-caption text-on-surface-variant flex items-center gap-1 mb-sm">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Kantin Stevia
+                        </p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container border border-outline-variant text-on-surface-variant text-xs px-2 py-1 rounded-full">Makanan Berat</span>
+</div>
+<div class="mt-auto pt-md border-t border-surface-variant flex items-center justify-between text-caption text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span> 16:00 - 23:00</span>
+<span class="font-label-bold text-outline">Lihat Menu</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-surface-variant hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-shadow duration-300 flex flex-col group cursor-pointer">
+<div class="h-48 w-full relative overflow-hidden">
+<img alt="Sate Ayam" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A close-up view of sizzling Indonesian chicken satay skewers being grilled over hot charcoal, with rich peanut sauce drizzled on top. Smoke gently rises against a softly blurred, warm-toned background, emphasizing the freshly cooked, savory nature of the street food." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2jkYbCGAKeou2opLfzOWrsYoHv9bixvT-4x8PnZlGfbEcJhNMQiJUrpCMm1HvORlvtbPqtDc5ZjlAkiz8lp2MMjsO6Uj0o3kvYiZbvTkDETuB7aqOIWTDzzmQU64WVd1EQR-Z0sbwS9aPD7QPjrJSB8_L6h_ILWOlyo_FS3Xk1cpb_iJPTluGVpfwRHu9t97uYq62_F-zU59_QvxyKVwH-KW9bqFjK6cAImFCaVdIW0TiXWJm0Yn4yQxvUomuDzX0Wr1Df4C-d3aQ"/>
+<div class="absolute top-sm right-sm bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-bold text-on-surface text-xs">4.7</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-h3 text-on-surface truncate pr-2">Sate Madura Cak Udin</h3>
+<span class="bg-[#9df5bd]/20 text-primary-container text-[10px] font-bold px-2 py-1 rounded-full border border-primary-fixed-dim whitespace-nowrap">Buka</span>
+</div>
+<p class="font-caption text-on-surface-variant flex items-center gap-1 mb-sm">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Kantin Sapta Marga
+                        </p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container border border-outline-variant text-on-surface-variant text-xs px-2 py-1 rounded-full">Makanan Berat</span>
+<span class="bg-surface-container border border-outline-variant text-on-surface-variant text-xs px-2 py-1 rounded-full">Sate</span>
+</div>
+<div class="mt-auto pt-md border-t border-surface-variant flex items-center justify-between text-caption text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span> 10:00 - 20:00</span>
+<span class="font-label-bold text-primary">Lihat Menu</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-auto flex justify-center items-center gap-sm">
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-lg bg-primary text-on-primary font-button flex items-center justify-center">1</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button">2</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button">3</button>
+<span class="text-on-surface-variant px-1">...</span>
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button">8</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Component (Mobile Only) -->
+<nav class="bg-surface-container-lowest/90 backdrop-blur-md text-primary-container font-['Plus_Jakarta_Sans'] text-[10px] font-medium border-t border-surface-variant shadow-[0_-4px_12px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 md:hidden rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:bg-surface-container scale-110 duration-200 ease-out p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center text-primary-container bg-[#9df5bd]/20 rounded-xl px-3 py-1 scale-110 duration-200 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">storefront</span>
+            Directory
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:bg-surface-container scale-110 duration-200 ease-out p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">receipt_long</span>
+            Orders
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:bg-surface-container scale-110 duration-200 ease-out p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+            Profile
+        </a>
+</nav>
+</body></html>

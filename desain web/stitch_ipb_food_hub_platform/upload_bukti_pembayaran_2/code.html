@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Upload Bukti Pembayaran - IPB Food Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container": "#ebefe9",
+                      "on-tertiary-fixed-variant": "#7a2d33",
+                      "on-tertiary-fixed": "#40010b",
+                      "tertiary-fixed-dim": "#ffb3b4",
+                      "surface-bright": "#f6fbf4",
+                      "on-primary-container": "#91e9b1",
+                      "on-secondary": "#ffffff",
+                      "secondary": "#835500",
+                      "on-error": "#ffffff",
+                      "on-background": "#181d19",
+                      "surface-container-high": "#e5e9e3",
+                      "inverse-primary": "#81d9a2",
+                      "on-secondary-fixed": "#291800",
+                      "on-primary": "#ffffff",
+                      "outline-variant": "#bec9bf",
+                      "primary": "#00502e",
+                      "on-tertiary": "#ffffff",
+                      "primary-fixed": "#9df5bd",
+                      "tertiary-container": "#964247",
+                      "surface-dim": "#d7dbd5",
+                      "secondary-fixed": "#ffddb4",
+                      "error": "#ba1a1a",
+                      "primary-fixed-dim": "#81d9a2",
+                      "surface-variant": "#dfe4dd",
+                      "secondary-fixed-dim": "#ffb955",
+                      "background": "#f6fbf4",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#f6fbf4",
+                      "on-surface": "#181d19",
+                      "inverse-on-surface": "#eef2eb",
+                      "on-primary-fixed-variant": "#00522f",
+                      "tertiary": "#782b31",
+                      "inverse-surface": "#2d322d",
+                      "surface-container-highest": "#dfe4dd",
+                      "outline": "#6f7a71",
+                      "on-error-container": "#93000a",
+                      "secondary-container": "#feae2c",
+                      "surface-container-low": "#f1f5ee",
+                      "error-container": "#ffdad6",
+                      "on-surface-variant": "#3f4941",
+                      "on-secondary-fixed-variant": "#633f00",
+                      "on-primary-fixed": "#002110",
+                      "surface-tint": "#046d40",
+                      "primary-container": "#006b3f",
+                      "on-secondary-container": "#6b4500",
+                      "tertiary-fixed": "#ffdada",
+                      "on-tertiary-container": "#ffc9c9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "base": "4px",
+                      "xl": "32px",
+                      "md": "16px",
+                      "margin-desktop": "24px",
+                      "gutter": "16px",
+                      "sm": "8px",
+                      "lg": "24px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "h3": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "h1": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "caption": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "button": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "h2": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-bold": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "h3": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "caption": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "button": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h2": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-bold": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen pt-16">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm transition-all duration-200">
+<div class="flex items-center space-x-4">
+<span class="text-xl font-bold text-emerald-800 dark:text-emerald-400 font-plus-jakarta tracking-tight">IPB Food Hub</span>
+</div>
+<div class="flex items-center space-x-4">
+<button class="text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 p-2 rounded-full transition-all duration-200 active:scale-95 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 p-2 rounded-full transition-all duration-200 active:scale-95 flex items-center justify-center overflow-hidden w-8 h-8">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A small, circular profile picture showing a smiling person in a professional yet relaxed setting. The lighting is soft and natural, suggesting a daytime environment. The color palette is neutral and blends well with the overarching clean-green modern aesthetic of the application UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbjfbbppzBbMRo1yfB9vGHF6gNDSI4X3LOuncvnV3rX_5H2KA-ut7qJLLBYvsn8RfxLwsl9VuVpEHDbzI1gYXpNdPZHq0U_0j7EGe3e5Zfj4KrO5rw8ZnE_qwcaK77Wl-c7aO9boqde3-4VIVQc0UNTG6w5_cRIBow1ZicuVVnxkDQe32QXf1uPyUA0Bj4xcjkJ3bVa7YPNkxQPjYVoFQbVO7U-2p-0_GlAVmuqX7T60SyV3OAp6in48oYXBCBolsKAQfYKe3gh9aJ"/>
+</button>
+</div>
+</nav>
+<main class="max-w-[1440px] mx-auto px-margin-desktop py-xl">
+<!-- Header & Stepper -->
+<div class="mb-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-sm">Selesaikan Pembayaran</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Order ID: #ORD-20231024-001</p>
+</div>
+<!-- Progress Stepper -->
+<div class="flex items-center gap-2">
+<!-- Step 1: Completed -->
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface hidden md:inline">Pesanan Dibuat</span>
+</div>
+<div class="w-8 h-px bg-outline-variant"></div>
+<!-- Step 2: Active -->
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-bold text-label-bold">
+                        2
+                    </div>
+<span class="font-label-bold text-label-bold text-primary hidden md:inline">Upload Bukti</span>
+</div>
+<div class="w-8 h-px bg-outline-variant"></div>
+<!-- Step 3: Inactive -->
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full border border-outline text-outline flex items-center justify-center font-label-bold text-label-bold">
+                        3
+                    </div>
+<span class="font-label-bold text-label-bold text-outline hidden md:inline">Validasi</span>
+</div>
+<div class="w-8 h-px bg-outline-variant"></div>
+<!-- Step 4: Inactive -->
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full border border-outline text-outline flex items-center justify-center font-label-bold text-label-bold">
+                        4
+                    </div>
+<span class="font-label-bold text-label-bold text-outline hidden md:inline">Selesai</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row gap-lg">
+<!-- LEFT COLUMN: Transfer Details (55%) -->
+<div class="w-full lg:w-[55%] flex flex-col gap-md">
+<!-- Total Card -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+<p class="font-body-md text-body-md text-on-surface-variant mb-xs">Total Pembayaran</p>
+<div class="flex justify-between items-end">
+<h2 class="font-h2 text-h2 text-on-surface">Rp 45.000</h2>
+<div class="flex flex-col items-end">
+<span class="font-caption text-caption text-error mb-xs">Batas Waktu Pembayaran</span>
+<div class="flex items-center gap-1 text-error font-label-bold text-label-bold bg-error-container px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                23:59 WIB
+                            </div>
+</div>
+</div>
+</div>
+<!-- Payment Methods Card -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex-grow">
+<h3 class="font-h3 text-h3 text-on-surface mb-md">Pilih Metode Pembayaran</h3>
+<!-- Tabs -->
+<div class="flex gap-2 mb-md border-b border-outline-variant pb-xs">
+<button class="font-button text-button text-primary border-b-2 border-primary pb-2 px-1">Bank Transfer</button>
+<button class="font-button text-button text-on-surface-variant hover:text-on-surface pb-2 px-1">E-Wallet</button>
+<button class="font-button text-button text-on-surface-variant hover:text-on-surface pb-2 px-1">QRIS</button>
+</div>
+<!-- Bank Options Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-sm mb-lg">
+<div class="border-2 border-primary rounded-lg p-sm flex items-center justify-center cursor-pointer bg-surface-bright">
+<span class="font-label-bold text-label-bold text-primary">BCA</span>
+</div>
+<div class="border border-outline-variant rounded-lg p-sm flex items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="font-label-bold text-label-bold text-on-surface">Mandiri</span>
+</div>
+<div class="border border-outline-variant rounded-lg p-sm flex items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="font-label-bold text-label-bold text-on-surface">BNI</span>
+</div>
+<div class="border border-outline-variant rounded-lg p-sm flex items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="font-label-bold text-label-bold text-on-surface">BRI</span>
+</div>
+</div>
+<!-- Selected Bank Details -->
+<div class="bg-surface-container p-md rounded-lg">
+<div class="flex items-center gap-sm mb-md">
+<div class="w-10 h-10 bg-white rounded flex items-center justify-center font-bold text-primary shadow-sm">BCA</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Bank BCA</p>
+<p class="font-caption text-caption text-on-surface-variant">Proses verifikasi manual 1-10 menit</p>
+</div>
+</div>
+<div class="space-y-md">
+<div>
+<p class="font-caption text-caption text-on-surface-variant mb-xs">Nomor Rekening</p>
+<div class="flex justify-between items-center bg-surface-container-lowest p-sm rounded-md border border-outline-variant">
+<span class="font-h3 text-h3 text-on-surface tracking-wider">0812-3456-7890</span>
+<button class="flex items-center gap-1 text-primary font-button text-button hover:text-primary-container">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+                                        Salin
+                                    </button>
+</div>
+</div>
+<div>
+<p class="font-caption text-caption text-on-surface-variant mb-xs">Atas Nama</p>
+<p class="font-label-bold text-label-bold text-on-surface">Warung Nasi Padang Minang</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Upload Form (45%) -->
+<div class="w-full lg:w-[45%] flex flex-col">
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex-grow flex flex-col">
+<h3 class="font-h3 text-h3 text-on-surface mb-sm">Upload Bukti Transfer</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md">Pastikan bukti transfer terlihat jelas, mencakup nominal dan nomor rekening tujuan.</p>
+<!-- Form Inputs -->
+<div class="space-y-md flex-grow">
+<!-- Dropdown -->
+<div>
+<label class="block font-label-bold text-label-bold text-on-surface mb-xs">Bank Pengirim</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg py-2 px-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+<option>BCA</option>
+<option>Mandiri</option>
+<option>Lainnya</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block font-label-bold text-label-bold text-on-surface mb-xs">Nama Pengirim</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg py-2 px-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Masukkan nama pemilik rekening" type="text"/>
+</div>
+<!-- Upload Area -->
+<div>
+<label class="block font-label-bold text-label-bold text-on-surface mb-xs">Foto Bukti Transfer</label>
+<div class="border-2 border-dashed border-primary/50 bg-primary-fixed/10 rounded-xl p-xl flex flex-col items-center justify-center text-center hover:bg-primary-fixed/20 transition-colors cursor-pointer min-h-[200px]">
+<span class="material-symbols-outlined text-[48px] text-primary mb-sm">cloud_upload</span>
+<p class="font-label-bold text-label-bold text-primary mb-1">Klik atau drag foto bukti transfer di sini</p>
+<p class="font-caption text-caption text-on-surface-variant">Maksimal ukuran file 5MB. Format didukung: JPG, PNG, PDF.</p>
+</div>
+</div>
+</div>
+<!-- Submit Action -->
+<div class="mt-xl pt-md border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary font-button text-button py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm flex justify-center items-center gap-2">
+                             Kirim Bukti Pembayaran
+                             <span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

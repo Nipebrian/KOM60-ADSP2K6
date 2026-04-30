@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Diagram - IPB Food & UMKM Student Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #1a1a2e; color: #e0e0e0; overflow: hidden; }
+        
+        #header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: linear-gradient(135deg, #16213e, #0f3460);
+            padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 2px solid #e94560; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        #header h1 { font-size: 18px; color: #fff; }
+        #header h1 span { color: #e94560; }
+        #header .subtitle { font-size: 12px; color: #8892b0; }
+        .controls { display: flex; gap: 8px; align-items: center; }
+        .controls button {
+            background: #e94560; border: none; color: #fff; padding: 6px 14px;
+            border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;
+        }
+        .controls button:hover { background: #c73652; transform: scale(1.05); }
+        .zoom-info { color: #8892b0; font-size: 12px; min-width: 50px; text-align: center; }
+
+        #canvas {
+            position: absolute; top: 56px; left: 0; right: 0; bottom: 0;
+            overflow: hidden; cursor: grab;
+        }
+        #canvas.dragging { cursor: grabbing; }
+        #world { position: absolute; transform-origin: 0 0; }
+
+        .uml-class {
+            position: absolute; min-width: 260px; background: #16213e;
+            border: 2px solid #0f3460; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            cursor: move; user-select: none; transition: box-shadow 0.2s;
+        }
+        .uml-class:hover { box-shadow: 0 8px 30px rgba(233,69,96,0.3); z-index: 50; }
+        .uml-class.abstract .class-name { font-style: italic; }
+
+        .class-name {
+            padding: 10px 14px; text-align: center; font-weight: 700; font-size: 14px;
+            border-radius: 6px 6px 0 0; color: #fff;
+        }
+        .class-name small { display: block; font-size: 10px; font-weight: 400; opacity: 0.7; margin-bottom: 2px; }
+
+        .bg-abstract { background: linear-gradient(135deg, #e94560, #c73652); }
+        .bg-entity { background: linear-gradient(135deg, #0f3460, #1a1a5e); }
+        .bg-mahasiswa { background: linear-gradient(135deg, #00b4d8, #0077b6); }
+        .bg-umkm { background: linear-gradient(135deg, #e76f51, #f4a261); }
+        .bg-admin { background: linear-gradient(135deg, #9b5de5, #6930c3); }
+
+        .class-section {
+            padding: 8px 14px; border-top: 1px solid #0f3460; font-size: 12px; line-height: 1.7;
+        }
+        .class-section .label { font-size: 10px; color: #e94560; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .attr { color: #ccd6f6; }
+        .attr .vis { color: #e94560; font-weight: bold; margin-right: 3px; }
+        .attr .type { color: #64ffda; }
+        .method { color: #ccd6f6; }
+        .method .vis { color: #64ffda; font-weight: bold; margin-right: 3px; }
+        .method .ret { color: #ffd166; }
+
+        svg#lines {
+            position: absolute; top: 0; left: 0; width: 8000px; height: 6000px; pointer-events: none; z-index: -1;
+        }
+        svg#lines line, svg#lines path { stroke-width: 2; fill: none; }
+        .rel-generalization { stroke: #e94560; }
+        .rel-composition { stroke: #64ffda; }
+        .rel-association { stroke: #ffd166; }
+        .rel-dependency { stroke: #8892b0; stroke-dasharray: 8,4; }
+
+        .legend {
+            position: fixed; bottom: 16px; left: 16px; background: rgba(22,33,62,0.95);
+            border: 1px solid #0f3460; border-radius: 8px; padding: 14px 18px; z-index: 100;
+            font-size: 11px; max-width: 240px;
+        }
+        .legend h3 { color: #e94560; margin-bottom: 8px; font-size: 13px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
+        .legend-line { width: 36px; height: 2px; flex-shrink: 0; }
+        .legend-line.gen { background: #e94560; }
+        .legend-line.comp { background: #64ffda; }
+        .legend-line.assoc { background: #ffd166; }
+        .legend-line.dep { background: #8892b0; background: repeating-linear-gradient(90deg, #8892b0 0, #8892b0 8px, transparent 8px, transparent 12px); }
+        .multiplicity {
+            font-size: 11px; font-weight: 700; position: absolute; pointer-events: none;
+            background: rgba(22,33,62,0.9); padding: 1px 4px; border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <div>
+        <h1>Class Diagram — <span>IPB Food & UMKM Student Hub</span></h1>
+        <div class="subtitle">KOM 1337 • Analisis dan Desain Sistem • Kelompok 6 P2</div>
+    </div>
+    <div class="controls">
+        <button onclick="zoomIn()">+ Zoom In</button>
+        <span class="zoom-info" id="zoomLabel">100%</span>
+        <button onclick="zoomOut()">− Zoom Out</button>
+        <button onclick="resetView()">⟲ Reset</button>
+    </div>
+</div>
+
+<div id="canvas">
+    <div id="world">
+        <svg id="lines"><defs>
+            <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ffd166"/></marker>
+            <marker id="arrowDep" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#8892b0"/></marker>
+            <marker id="triangle" markerWidth="14" markerHeight="10" refX="14" refY="5" orient="auto"><polygon points="0 0, 14 5, 0 10" fill="none" stroke="#e94560" stroke-width="2"/></marker>
+            <marker id="diamond" markerWidth="14" markerHeight="10" refX="0" refY="5" orient="auto"><polygon points="7 0, 14 5, 7 10, 0 5" fill="#64ffda" stroke="#64ffda" stroke-width="1"/></marker>
+        </defs></svg>
+    </div>
+</div>
+
+<div class="legend">
+    <h3>Legenda Relasi</h3>
+    <div class="legend-item"><div class="legend-line gen"></div><span>▷ Generalization (is-a)</span></div>
+    <div class="legend-item"><div class="legend-line comp"></div><span>◆ Composition (has-a kuat)</span></div>
+    <div class="legend-item"><div class="legend-line assoc"></div><span>→ Association / Directed</span></div>
+    <div class="legend-item"><div class="legend-line dep"></div><span>⇢ Dependency (uses)</span></div>
+</div>
+
+<script>
+const classes = [
+    { id:'User', x:820, y:40, abstract:true, bg:'bg-abstract', stereotype:'abstract',
+      attrs:['-userId:String','-nama:String','-email:String','-password:String','-noTelp:String','-fotoProfil:String','-tanggalDaftar:Date','-status:String'],
+      methods:['+login():boolean','+logout():void','+updateProfil():void','+getDetail():User'] },
+    { id:'Mahasiswa', x:280, y:360, bg:'bg-mahasiswa',
+      attrs:['-nim:String','-fakultas:String','-departemen:String','-angkatan:int'],
+      methods:['+lihatDaftarUMKM():List','+lihatDetailUMKM():UMKM','+buatPesanan():Pesanan','+uploadBuktiPembayaran():void','+beriRating():void','+lihatRiwayatPesanan():List','+lihatPromo():List'] },
+    { id:'PelakuUMKM', x:820, y:360, bg:'bg-umkm',
+      attrs:['-nik:String','-nomorRekening:String','-namaBank:String','-nomorEwallet:String'],
+      methods:['+tambahMenu():void','+editMenu():void','+hapusMenu():void','+validasiPembayaran():void','+buatPromo():void','+kelolaPromo():void','+lihatDashboard():Dashboard','+updateStatusPesanan():void','+lihatRiwayatTransaksi():List'] },
+    { id:'Admin', x:1360, y:360, bg:'bg-admin',
+      attrs:['-level:String','-hakAkses:String'],
+      methods:['+kelolaAkunMahasiswa():void','+kelolaAkunUMKM():void','+moderasiUlasan():void','+moderasiPromo():void','+pantauTransaksi():List','+lihatStatistik():Statistik','+approveUMKM():void'] },
+    { id:'UMKM', x:820, y:760, bg:'bg-umkm',
+      attrs:['-umkmId:String','-namaUMKM:String','-deskripsi:String','-alamat:String','-kategori:String','-jamBuka:String','-jamTutup:String','-fotoToko:String','-statusOperasional:String','-tanggalDibuat:Date','-ratingRataRata:float'],
+      methods:['+getDetail():UMKM','+updateProfil():void','+getMenu():List','+isOpen():boolean','+hitungRatingRataRata():float'] },
+    { id:'Menu', x:1360, y:760, bg:'bg-entity',
+      attrs:['-menuId:String','-namaMenu:String','-deskripsi:String','-harga:double','-kategori:String','-fotoMenu:String','-statusKetersediaan:boolean'],
+      methods:['+getDetail():Menu','+updateHarga():void','+updateStatus():void'] },
+    { id:'Pesanan', x:280, y:760, bg:'bg-entity',
+      attrs:['-pesananId:String','-tanggalPesan:Date','-totalHarga:double','-statusPesanan:String','-catatanPesanan:String','-waktuPengambilan:Date'],
+      methods:['+hitungTotal():double','+updateStatus():void','+getDetail():Pesanan','+getDetailPesanan():List'] },
+    { id:'DetailPesanan', x:280, y:1180, bg:'bg-entity',
+      attrs:['-detailId:String','-jumlah:int','-hargaSatuan:double','-subtotal:double','-catatan:String'],
+      methods:['+hitungSubtotal():double','+getDetail():DetailPesanan'] },
+    { id:'Pembayaran', x:20, y:1180, bg:'bg-entity',
+      attrs:['-pembayaranId:String','-metodePembayaran:String','-jumlahBayar:double','-statusPembayaran:String','-tanggalBayar:Date','-tujuanTransfer:String'],
+      methods:['+getDetail():Pembayaran','+updateStatus():void'] },
+    { id:'BuktiPembayaran', x:20, y:1560, bg:'bg-entity',
+      attrs:['-buktiId:String','-fotoUrl:String','-tanggalUpload:Date','-statusVerifikasi:String','-catatanVerifikasi:String'],
+      methods:['+upload():void','+verify():void','+getDetail():BuktiPembayaran'] },
+    { id:'Rating', x:580, y:1180, bg:'bg-entity',
+      attrs:['-ratingId:String','-nilai:int','-komentar:String','-tanggalRating:Date','-balasan:String'],
+      methods:['+getDetail():Rating','+updateBalasan():void'] },
+    { id:'Promo', x:1100, y:1180, bg:'bg-entity',
+      attrs:['-promoId:String','-judul:String','-deskripsi:String','-diskonPersen:double','-tanggalMulai:Date','-tanggalBerakhir:Date','-statusAktif:boolean','-syaratKetentuan:String'],
+      methods:['+isActive():boolean','+getDetail():Promo','+activate():void','+deactivate():void'] }
+];
+
+const world = document.getElementById('world');
+const svg = document.getElementById('lines');
+const canvas = document.getElementById('canvas');
+let scale = 0.75, panX = 50, panY = 0, isPanning = false, startX, startY;
+let dragEl = null, dragOX, dragOY;
+
+function renderClass(c) {
+    const div = document.createElement('div');
+    div.className = 'uml-class' + (c.abstract ? ' abstract' : '');
+    div.id = 'cls-' + c.id;
+    div.style.left = c.x + 'px';
+    div.style.top = c.y + 'px';
+
+    let html = `<div class="class-name ${c.bg}">`;
+    if (c.stereotype) html += `<small>&laquo;${c.stereotype}&raquo;</small>`;
+    html += `${c.id}</div>`;
+
+    html += `<div class="class-section"><div class="label">Attributes</div>`;
+    c.attrs.forEach(a => {
+        const vis = a[0]; const rest = a.substring(1);
+        const [name, type] = rest.split(':');
+        html += `<div class="attr"><span class="vis">${vis}</span>${name} : <span class="type">${type}</span></div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="class-section"><div class="label">Methods</div>`;
+    c.methods.forEach(m => {
+        const vis = m[0]; const rest = m.substring(1);
+        const [name, ret] = rest.split(':');
+        html += `<div class="method"><span class="vis">${vis}</span>${name} : <span class="ret">${ret}</span></div>`;
+    });
+    html += `</div>`;
+
+    div.innerHTML = html;
+    world.appendChild(div);
+
+    div.addEventListener('mousedown', e => {
+        if (e.target.closest('.class-section')) return;
+        e.stopPropagation();
+        dragEl = div;
+        dragOX = e.clientX / scale - parseInt(div.style.left);
+        dragOY = e.clientY / scale - parseInt(div.style.top);
+        div.style.zIndex = 50;
+    });
+}
+
+classes.forEach(renderClass);
+
+document.addEventListener('mousemove', e => {
+    if (dragEl) {
+        const cData = classes.find(c => 'cls-' + c.id === dragEl.id);
+        cData.x = e.clientX / scale - dragOX;
+        cData.y = e.clientY / scale - dragOY;
+        dragEl.style.left = cData.x + 'px';
+        dragEl.style.top = cData.y + 'px';
+        drawLines();
+    } else if (isPanning) {
+        panX += e.clientX - startX;
+        panY += e.clientY - startY;
+        startX = e.clientX;
+        startY = e.clientY;
+        applyTransform();
+    }
+});
+document.addEventListener('mouseup', () => {
+    if (dragEl) dragEl.style.zIndex = '';
+    dragEl = null;
+    isPanning = false;
+    canvas.classList.remove('dragging');
+});
+
+canvas.addEventListener('mousedown', e => {
+    isPanning = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    canvas.classList.add('dragging');
+});
+canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+    scale = Math.max(0.2, Math.min(2, scale + delta));
+    applyTransform();
+    document.getElementById('zoomLabel').textContent = Math.round(scale * 100) + '%';
+});
+
+function applyTransform() {
+    world.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
+}
+function zoomIn() { scale = Math.min(2, scale + 0.1); applyTransform(); document.getElementById('zoomLabel').textContent = Math.round(scale*100)+'%'; }
+function zoomOut() { scale = Math.max(0.2, scale - 0.1); applyTransform(); document.getElementById('zoomLabel').textContent = Math.round(scale*100)+'%'; }
+function resetView() { scale = 0.75; panX = 50; panY = 0; applyTransform(); document.getElementById('zoomLabel').textContent = '75%'; }
+
+function getCenter(id) {
+    const el = document.getElementById('cls-' + id);
+    const c = classes.find(x => x.id === id);
+    return { x: c.x + el.offsetWidth / 2, y: c.y + el.offsetHeight / 2, w: el.offsetWidth, h: el.offsetHeight, top: c.y, bot: c.y + el.offsetHeight, left: c.x, right: c.x + el.offsetWidth };
+}
+
+function getEdgePoint(from, to) {
+    const dx = to.x - from.x, dy = to.y - from.y;
+    let fx, fy, tx, ty;
+    if (Math.abs(dy) * from.w > Math.abs(dx) * from.h) {
+        if (dy > 0) { fx = from.x; fy = from.bot; tx = to.x; ty = to.top; }
+        else { fx = from.x; fy = from.top; tx = to.x; ty = to.bot; }
+    } else {
+        if (dx > 0) { fx = from.right; fy = from.y; tx = to.left; ty = to.y; }
+        else { fx = from.left; fy = from.y; tx = to.right; ty = to.y; }
+    }
+    return { x1: fx, y1: fy, x2: tx, y2: ty };
+}
+
+const rels = [
+    { from:'Mahasiswa', to:'User', type:'gen' },
+    { from:'PelakuUMKM', to:'User', type:'gen' },
+    { from:'Admin', to:'User', type:'gen' },
+    { from:'PelakuUMKM', to:'UMKM', type:'assoc', labelFrom:'1', labelTo:'1', label:'memiliki' },
+    { from:'UMKM', to:'Menu', type:'comp', labelFrom:'1', labelTo:'0..*', label:'memiliki' },
+    { from:'Mahasiswa', to:'Pesanan', type:'assoc', labelFrom:'1', labelTo:'0..*', label:'membuat' },
+    { from:'Pesanan', to:'UMKM', type:'assoc', labelFrom:'0..*', labelTo:'1', label:'ditujukan ke' },
+    { from:'Pesanan', to:'DetailPesanan', type:'comp', labelFrom:'1', labelTo:'1..*', label:'terdiri dari' },
+    { from:'DetailPesanan', to:'Menu', type:'assoc', labelFrom:'0..*', labelTo:'1', label:'merujuk' },
+    { from:'Pesanan', to:'Pembayaran', type:'comp', labelFrom:'1', labelTo:'1', label:'memiliki' },
+    { from:'Pembayaran', to:'BuktiPembayaran', type:'comp', labelFrom:'1', labelTo:'0..1', label:'memiliki' },
+    { from:'Mahasiswa', to:'Rating', type:'assoc', labelFrom:'1', labelTo:'0..*', label:'memberikan' },
+    { from:'Rating', to:'UMKM', type:'assoc', labelFrom:'0..*', labelTo:'1', label:'untuk' },
+    { from:'UMKM', to:'Promo', type:'comp', labelFrom:'1', labelTo:'0..*', label:'membuat' },
+    { from:'Admin', to:'User', type:'dep', label:'manages' },
+    { from:'Admin', to:'UMKM', type:'dep', label:'moderates' },
+];
+
+function drawLines() {
+    while (svg.childNodes.length > 1) svg.removeChild(svg.lastChild);
+    document.querySelectorAll('.multiplicity').forEach(e => e.remove());
+
+    rels.forEach(r => {
+        const a = getCenter(r.from), b = getCenter(r.to);
+        const p = getEdgePoint(a, b);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', p.x1); line.setAttribute('y1', p.y1);
+        line.setAttribute('x2', p.x2); line.setAttribute('y2', p.y2);
+
+        if (r.type === 'gen') { line.classList.add('rel-generalization'); line.setAttribute('marker-end', 'url(#triangle)'); }
+        else if (r.type === 'comp') { line.classList.add('rel-composition'); line.setAttribute('marker-start', 'url(#diamond)'); }
+        else if (r.type === 'dep') { line.classList.add('rel-dependency'); line.setAttribute('marker-end', 'url(#arrowDep)'); }
+        else { line.classList.add('rel-association'); line.setAttribute('marker-end', 'url(#arrow)'); }
+
+        svg.appendChild(line);
+
+        if (r.labelFrom) {
+            const m = document.createElement('div');
+            m.className = 'multiplicity';
+            m.textContent = r.labelFrom;
+            m.style.left = (p.x1 + (p.x2 - p.x1) * 0.1 - 10) + 'px';
+            m.style.top = (p.y1 + (p.y2 - p.y1) * 0.1 - 10) + 'px';
+            m.style.color = '#64ffda';
+            world.appendChild(m);
+        }
+        if (r.labelTo) {
+            const m = document.createElement('div');
+            m.className = 'multiplicity';
+            m.textContent = r.labelTo;
+            m.style.left = (p.x1 + (p.x2 - p.x1) * 0.9 - 10) + 'px';
+            m.style.top = (p.y1 + (p.y2 - p.y1) * 0.9 - 10) + 'px';
+            m.style.color = '#ffd166';
+            world.appendChild(m);
+        }
+    });
+}
+
+applyTransform();
+drawLines();
+document.getElementById('zoomLabel').textContent = '75%';
+</script>
+</body>
+</html>

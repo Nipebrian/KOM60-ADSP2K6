@@ -1,0 +1,230 @@
+@startuml IPB_Food_UMKM_Student_Hub_Class_Diagram
+
+' ============================================
+' IPB Food & UMKM Student Hub - Class Diagram
+' Mata Kuliah: KOM 1337 - Analisis dan Desain Sistem
+' Kelompok 6 P2
+' ============================================
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam shadowing false
+skinparam defaultFontName Arial
+
+' ============ ABSTRACT CLASS ============
+abstract class User {
+    - userId : String
+    - nama : String
+    - email : String
+    - password : String
+    - noTelp : String
+    - fotoProfil : String
+    - tanggalDaftar : Date
+    - status : String
+    --
+    + login() : boolean
+    + logout() : void
+    + updateProfil() : void
+    + getDetail() : User
+}
+
+' ============ INHERITANCE ============
+class Mahasiswa {
+    - nim : String
+    - fakultas : String
+    - departemen : String
+    - angkatan : int
+    --
+    + lihatDaftarUMKM() : List<UMKM>
+    + lihatDetailUMKM(umkmId: String) : UMKM
+    + buatPesanan(pesanan: Pesanan) : Pesanan
+    + uploadBuktiPembayaran(bukti: BuktiPembayaran) : void
+    + beriRating(rating: Rating) : void
+    + lihatRiwayatPesanan() : List<Pesanan>
+    + lihatPromo() : List<Promo>
+}
+
+class PelakuUMKM {
+    - nik : String
+    - nomorRekening : String
+    - namaBank : String
+    - nomorEwallet : String
+    --
+    + tambahMenu(menu: Menu) : void
+    + editMenu(menuId: String, menu: Menu) : void
+    + hapusMenu(menuId: String) : void
+    + validasiPembayaran(pembayaranId: String, status: String) : void
+    + buatPromo(promo: Promo) : void
+    + kelolaPromo(promoId: String) : void
+    + lihatDashboard() : Dashboard
+    + updateStatusPesanan(pesananId: String, status: String) : void
+    + lihatRiwayatTransaksi() : List<Pesanan>
+}
+
+class Admin {
+    - level : String
+    - hakAkses : String
+    --
+    + kelolaAkunMahasiswa(userId: String, aksi: String) : void
+    + kelolaAkunUMKM(userId: String, aksi: String) : void
+    + moderasiUlasan(ratingId: String, aksi: String) : void
+    + moderasiPromo(promoId: String, aksi: String) : void
+    + pantauTransaksi() : List<Pesanan>
+    + lihatStatistik() : Statistik
+    + approveUMKM(umkmId: String) : void
+}
+
+' ============ ENTITY CLASSES ============
+class UMKM {
+    - umkmId : String
+    - namaUMKM : String
+    - deskripsi : String
+    - alamat : String
+    - kategori : String
+    - jamBuka : String
+    - jamTutup : String
+    - fotoToko : String
+    - statusOperasional : String
+    - tanggalDibuat : Date
+    - ratingRataRata : float
+    --
+    + getDetail() : UMKM
+    + updateProfil(data: UMKM) : void
+    + getMenu() : List<Menu>
+    + isOpen() : boolean
+    + hitungRatingRataRata() : float
+}
+
+class Menu {
+    - menuId : String
+    - namaMenu : String
+    - deskripsi : String
+    - harga : double
+    - kategori : String
+    - fotoMenu : String
+    - statusKetersediaan : boolean
+    --
+    + getDetail() : Menu
+    + updateHarga(hargaBaru: double) : void
+    + updateStatus(tersedia: boolean) : void
+}
+
+class Pesanan {
+    - pesananId : String
+    - tanggalPesan : Date
+    - totalHarga : double
+    - statusPesanan : String
+    - catatanPesanan : String
+    - waktuPengambilan : Date
+    --
+    + hitungTotal() : double
+    + updateStatus(status: String) : void
+    + getDetail() : Pesanan
+    + getDetailPesanan() : List<DetailPesanan>
+}
+
+class DetailPesanan {
+    - detailId : String
+    - jumlah : int
+    - hargaSatuan : double
+    - subtotal : double
+    - catatan : String
+    --
+    + hitungSubtotal() : double
+    + getDetail() : DetailPesanan
+}
+
+class Pembayaran {
+    - pembayaranId : String
+    - metodePembayaran : String
+    - jumlahBayar : double
+    - statusPembayaran : String
+    - tanggalBayar : Date
+    - tujuanTransfer : String
+    --
+    + getDetail() : Pembayaran
+    + updateStatus(status: String) : void
+}
+
+class BuktiPembayaran {
+    - buktiId : String
+    - fotoUrl : String
+    - tanggalUpload : Date
+    - statusVerifikasi : String
+    - catatanVerifikasi : String
+    --
+    + upload(foto: File) : void
+    + verify(status: String, catatan: String) : void
+    + getDetail() : BuktiPembayaran
+}
+
+class Rating {
+    - ratingId : String
+    - nilai : int
+    - komentar : String
+    - tanggalRating : Date
+    - balasan : String
+    --
+    + getDetail() : Rating
+    + updateBalasan(balasan: String) : void
+}
+
+class Promo {
+    - promoId : String
+    - judul : String
+    - deskripsi : String
+    - diskonPersen : double
+    - tanggalMulai : Date
+    - tanggalBerakhir : Date
+    - statusAktif : boolean
+    - syaratKetentuan : String
+    --
+    + isActive() : boolean
+    + getDetail() : Promo
+    + activate() : void
+    + deactivate() : void
+}
+
+' ============ RELATIONSHIPS ============
+
+' Generalization (Inheritance)
+User <|-- Mahasiswa
+User <|-- PelakuUMKM
+User <|-- Admin
+
+' PelakuUMKM memiliki UMKM (1 to 1) - Association
+PelakuUMKM "1" --> "1" UMKM : memiliki >
+
+' UMKM memiliki Menu (Composition - menu tidak bisa ada tanpa UMKM)
+UMKM "1" *-- "0..*" Menu : memiliki >
+
+' Mahasiswa membuat Pesanan (1 ke banyak)
+Mahasiswa "1" --> "0..*" Pesanan : membuat >
+
+' Pesanan ditujukan ke UMKM
+Pesanan "0..*" --> "1" UMKM : ditujukan ke >
+
+' Pesanan terdiri dari DetailPesanan (Composition)
+Pesanan "1" *-- "1..*" DetailPesanan : terdiri dari >
+
+' DetailPesanan merujuk ke Menu (Directed Association)
+DetailPesanan "0..*" --> "1" Menu : merujuk >
+
+' Pesanan memiliki Pembayaran (Composition)
+Pesanan "1" *-- "1" Pembayaran : memiliki >
+
+' Pembayaran memiliki BuktiPembayaran (Composition)
+Pembayaran "1" *-- "0..1" BuktiPembayaran : memiliki >
+
+' Mahasiswa memberikan Rating ke UMKM
+Mahasiswa "1" --> "0..*" Rating : memberikan >
+Rating "0..*" --> "1" UMKM : untuk >
+
+' UMKM memiliki Promo (Composition)
+UMKM "1" *-- "0..*" Promo : membuat >
+
+' Admin dependency - mengelola sistem
+Admin ..> User : <<manages>>
+Admin ..> UMKM : <<moderates>>
+
+@enduml
