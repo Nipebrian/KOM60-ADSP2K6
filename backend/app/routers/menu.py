@@ -89,7 +89,9 @@ def delete_menu(
     current_user: User = Depends(require_role(["umkm"])),
     db: Session = Depends(get_db),
 ):
-    """Hapus menu (hanya pemilik UMKM)."""
+    """Hapus menu (hanya pemilik UMKM). Jika menu sudah pernah dipesan, menu dinonaktifkan."""
+    from app.models.pesanan import DetailPesanan
+
     umkm = db.query(UMKM).filter(UMKM.umkm_id == umkm_id).first()
     if not umkm or umkm.pemilik_id != current_user.user_id:
         raise HTTPException(status_code=403, detail="Akses ditolak")
@@ -97,6 +99,14 @@ def delete_menu(
     menu = db.query(Menu).filter(Menu.menu_id == menu_id, Menu.umkm_id == umkm_id).first()
     if not menu:
         raise HTTPException(status_code=404, detail="Menu tidak ditemukan")
+
+    # Cek apakah menu pernah dipesan (ada di detail_pesanan)
+    has_orders = db.query(DetailPesanan).filter(DetailPesanan.menu_id == menu_id).first()
+    if has_orders:
+        # Tidak bisa dihapus, nonaktifkan saja
+        menu.status_ketersediaan = False
+        db.commit()
+        return {"message": "Menu sudah pernah dipesan, status diubah ke tidak tersedia"}
 
     db.delete(menu)
     db.commit()

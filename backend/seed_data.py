@@ -216,7 +216,7 @@ try:
         print(f"   - 3 Promo")
         print(f"   - 6 Rating/ulasan")
         print()
-        print("📋 Akun login untuk testing:")
+        print("Akun login untuk testing:")
         print("   Admin   : admin@ipb.ac.id / admin123")
         print("   Mahasiswa: hasan@apps.ipb.ac.id / hasan123")
         print("   Mahasiswa: mirza@apps.ipb.ac.id / mirza123")

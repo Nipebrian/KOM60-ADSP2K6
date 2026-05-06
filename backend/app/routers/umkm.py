@@ -42,6 +42,20 @@ def list_umkm(
     )
 
 
+# PENTING: /me/toko harus didefinisikan SEBELUM /{umkm_id}
+# agar FastAPI tidak mencocokkan "me" sebagai umkm_id
+@router.get("/me/toko", response_model=UMKMResponse)
+def get_my_umkm(
+    current_user: User = Depends(require_role(["umkm"])),
+    db: Session = Depends(get_db),
+):
+    """Mendapatkan data UMKM milik user yang sedang login."""
+    umkm = db.query(UMKM).filter(UMKM.pemilik_id == current_user.user_id).first()
+    if not umkm:
+        raise HTTPException(status_code=404, detail="Anda belum memiliki UMKM")
+    return UMKMResponse.model_validate(umkm)
+
+
 @router.get("/{umkm_id}", response_model=UMKMResponse)
 def get_umkm(umkm_id: str, db: Session = Depends(get_db)):
     """Mendapatkan detail satu UMKM berdasarkan ID."""
@@ -120,14 +134,3 @@ def delete_umkm(
     db.commit()
     return {"message": "UMKM berhasil dihapus"}
 
-
-@router.get("/me/toko", response_model=UMKMResponse)
-def get_my_umkm(
-    current_user: User = Depends(require_role(["umkm"])),
-    db: Session = Depends(get_db),
-):
-    """Mendapatkan data UMKM milik user yang sedang login."""
-    umkm = db.query(UMKM).filter(UMKM.pemilik_id == current_user.user_id).first()
-    if not umkm:
-        raise HTTPException(status_code=404, detail="Anda belum memiliki UMKM")
-    return UMKMResponse.model_validate(umkm)
