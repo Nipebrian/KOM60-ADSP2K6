@@ -19,7 +19,7 @@ import KelolaAkunPage     from './pages/KelolaAkunPage';
 class App extends Component {
   render() {
     return (
-      <Router>
+      <Router basename="/KOM60-ADSP2K6">
         <Routes>
           {/* ── Auth ── */}
           <Route path="/login"    element={<LoginPage />} />
