@@ -27,3 +27,12 @@ implementasi-fitur.md
 implementation-plan.md
 penjelasan-fitur-presentasi.md
 progress-report-fase1.md
+
+# Panduan & Prompt (Lokal Saja)
+PANDUAN-FRONTEND.md
+PROMPT-HASAN-FRONTEND-CORE.md
+PROMPT-MIRZA-FRONTEND-FITUR.md
+
+# Claude Code metadata
+.claude/
+docs/

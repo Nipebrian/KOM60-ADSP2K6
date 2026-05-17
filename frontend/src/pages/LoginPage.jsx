@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import heroImg from '../assets/hero.png';
 import './Auth.css';
 
 class LoginPage extends Component {
@@ -9,6 +10,7 @@ class LoginPage extends Component {
     this.state = {
       email: '',
       password: '',
+      showPassword: false,
       error: '',
       loading: false,
       redirect: false,
@@ -22,19 +24,13 @@ class LoginPage extends Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     this.setState({ loading: true, error: '' });
-
     try {
-      const res = await authAPI.login({
-        email: this.state.email,
-        password: this.state.password,
-      });
+      const res = await authAPI.login({ email: this.state.email, password: this.state.password });
       localStorage.setItem('token', res.data.access_token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       this.setState({ redirect: true });
     } catch (err) {
-      this.setState({
-        error: err.response?.data?.detail || 'Login gagal. Coba lagi.',
-      });
+      this.setState({ error: err.response?.data?.detail || 'Email atau password salah.' });
     } finally {
       this.setState({ loading: false });
     }
@@ -45,57 +41,95 @@ class LoginPage extends Component {
       return <Navigate to="/" replace />;
     }
 
+    const { email, password, showPassword, error, loading } = this.state;
+
     return (
-      <div className="auth-container">
-        <div className="auth-card">
-          <div className="auth-header">
-            <h1 className="auth-logo">🍔 IPB Food Hub</h1>
-            <p className="auth-subtitle">Masuk ke akunmu</p>
+      <div className="auth-wrapper">
+        {/* ── LEFT PANEL ── */}
+        <div className="auth-left">
+          <div className="auth-left-logo">
+            <span className="logo-icon">🍽️</span>
+            IPB Food Hub
+          </div>
+          <div className="auth-left-img-area">
+            <img src={heroImg} alt="IPB Food Hub" />
+          </div>
+          <div className="auth-left-text">
+            <h2>Pesan makan tanpa antre.</h2>
+            <p>Nikmati kemudahan memesan makanan dari kantin-kantin terbaik di lingkungan kampus dengan cepat dan praktis.</p>
+          </div>
+        </div>
+
+        {/* ── RIGHT PANEL ── */}
+        <div className="auth-right">
+          <div className="auth-card">
+            <h1>Selamat Datang!</h1>
+            <p className="auth-subtitle">Masuk ke akun IPB Food Hub kamu</p>
+
+            {error && <div className="auth-error">{error}</div>}
+
+            <form onSubmit={this.handleSubmit}>
+              {/* Email */}
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <div className="input-wrap">
+                  <span className="iicon">✉</span>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    placeholder="nim@apps.ipb.ac.id"
+                    value={email}
+                    onChange={this.handleChange}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <div className="input-wrap">
+                  <span className="iicon">🔒</span>
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={this.handleChange}
+                    required
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    className="eye-btn"
+                    onClick={() => this.setState({ showPassword: !showPassword })}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? '🙈' : '👁'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="auth-forgot">
+                <a href="#">Lupa password?</a>
+              </div>
+
+              <button type="submit" className="btn-submit" disabled={loading}>
+                {loading ? 'Memproses...' : 'Masuk'}
+              </button>
+            </form>
+
+            <div className="auth-divider">ATAU</div>
+
+            <p className="auth-link-row">
+              Belum punya akun? <Link to="/register">Daftar di sini</Link>
+            </p>
           </div>
 
-          {this.state.error && (
-            <div className="auth-error">{this.state.error}</div>
-          )}
-
-          <form onSubmit={this.handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                placeholder="nama@email.com"
-                value={this.state.email}
-                onChange={this.handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
-                id="password"
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                value={this.state.password}
-                onChange={this.handleChange}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="auth-btn"
-              disabled={this.state.loading}
-            >
-              {this.state.loading ? 'Memproses...' : 'Masuk'}
-            </button>
-          </form>
-
-          <p className="auth-switch">
-            Belum punya akun? <Link to="/register">Daftar di sini</Link>
-          </p>
+          <p className="auth-copyright">© 2024 IPB Food Hub — Kelompok 6 P2</p>
         </div>
       </div>
     );
