@@ -178,7 +178,7 @@ class PesananMasukPage extends Component {
                             </div>
                             <div>
                               <div style={{ fontWeight: 600, fontSize: 14 }}>{p.nama_mahasiswa || 'Mahasiswa'}</div>
-                              <div style={{ fontSize: 12, color: '#6b7280' }}>{formatDate(p.created_at)}</div>
+                              <div style={{ fontSize: 12, color: '#6b7280' }}>{formatDate(p.tanggal_pesan)}</div>
                             </div>
                           </div>
                           <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', fontSize: 13.5, color: '#374151' }}>
@@ -196,8 +196,8 @@ class PesananMasukPage extends Component {
                             <div style={{ fontSize: 18, fontWeight: 800, color: '#111827' }}>{formatRp(p.total_harga)}</div>
                           </div>
 
-                          {p.pembayaran?.bukti && (
-                            <a href={p.pembayaran.bukti} target="_blank" rel="noopener noreferrer"
+                          {p.pembayaran?.bukti?.foto_url && (
+                            <a href={p.pembayaran.bukti.foto_url} target="_blank" rel="noopener noreferrer"
                                style={{ fontSize: 13, color: '#006B3F', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
                               🖼 Lihat Bukti
                             </a>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { adminAPI } from '../services/api';
+import { adminAPI, umkmAPI } from '../services/api';
 import AdminSidebar from '../components/AdminSidebar';
 import './DashboardAdmin.css';
 
@@ -9,18 +9,13 @@ const formatRp = (n) => {
   return 'Rp ' + Number(n).toLocaleString('id-ID');
 };
 
-const ACTIVITIES = [
-  { dot: 'green',  text: 'UMKM Baru: Dapur Fakultas mendaftar sebagai merchant.', time: '10 menit lalu • by System Admin' },
-  { dot: 'blue',   text: 'Pembayaran Masuk: Rp 3.2k dikeluarkan ke 12 UMKM.', time: '2 hours ago • Automated' },
-  { dot: 'orange', text: 'Laporan Masuk: Pesanan lambat di area kampus Putra.', time: '3 hours ago • from User App' },
-  { dot: 'red',    text: 'Pendaftaran Mahasiswa: 50+ pengguna baru mendaftar.', time: 'Yesterday' },
-];
+const ROLE_DOT = { mahasiswa: 'green', umkm: 'orange', admin: 'red' };
 
 class DashboardAdminPage extends Component {
   constructor(props) {
     super(props);
     const user = JSON.parse(localStorage.getItem('user') || 'null');
-    this.state = { user, stats: null, loading: true };
+    this.state = { user, stats: null, umkmList: [], userList: [], loading: true };
   }
 
   componentDidMount() {
@@ -30,14 +25,22 @@ class DashboardAdminPage extends Component {
 
   fetchStats = async () => {
     try {
-      const res = await adminAPI.stats();
-      this.setState({ stats: res.data });
+      const [statsRes, umkmRes, userRes] = await Promise.allSettled([
+        adminAPI.stats(),
+        umkmAPI.list({ per_page: 5, page: 1 }),
+        adminAPI.listUsers({ per_page: 4, page: 1 }),
+      ]);
+      this.setState({
+        stats: statsRes.status === 'fulfilled' ? statsRes.value.data : null,
+        umkmList: umkmRes.status === 'fulfilled' ? (umkmRes.value.data.data || []) : [],
+        userList: userRes.status === 'fulfilled' ? (userRes.value.data.data || []) : [],
+      });
     } catch { /* silently ignore */ }
     finally { this.setState({ loading: false }); }
   };
 
   render() {
-    const { user, stats, loading } = this.state;
+    const { user, stats, umkmList, userList, loading } = this.state;
     if (!user) return <Navigate to="/login" replace />;
     if (user.role !== 'admin') return <Navigate to="/" replace />;
 
@@ -110,51 +113,44 @@ class DashboardAdminPage extends Component {
                   {/* UMKM Table */}
                   <div className="da-table-card">
                     <div className="da-table-header">
-                      <div className="da-table-title">UMKM Menunggu Persetujuan</div>
-                      <Link to="/dashboard/admin/umkm" className="da-see-all">Lihat Semua →</Link>
+                      <div className="da-table-title">UMKM Terdaftar Terbaru</div>
+                      <Link to="/dashboard/admin" className="da-see-all">Lihat Semua →</Link>
                     </div>
                     <table className="da-table">
                       <thead>
                         <tr>
-                          <th>UMKM Name</th>
-                          <th>Owner</th>
-                          <th>Date Applied</th>
-                          <th>Actions</th>
+                          <th>Nama UMKM</th>
+                          <th>Pemilik</th>
+                          <th>Kategori</th>
+                          <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                              <div style={{ width: 32, height: 32, borderRadius: 8, background: '#eaf5ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🍛</div>
-                              Warung Nasi IPB
-                            </div>
-                          </td>
-                          <td>Budi Santoso</td>
-                          <td>Oct 24, 2023</td>
-                          <td>
-                            <div style={{ display: 'flex', gap: 6 }}>
-                              <button className="da-btn primary sm">✓</button>
-                              <button className="da-btn danger sm">✕</button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                              <div style={{ width: 32, height: 32, borderRadius: 8, background: '#eaf5ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>☕</div>
-                              Kopi Rektorat
-                            </div>
-                          </td>
-                          <td>Siti Aminah</td>
-                          <td>Oct 23, 2023</td>
-                          <td>
-                            <div style={{ display: 'flex', gap: 6 }}>
-                              <button className="da-btn primary sm">✓</button>
-                              <button className="da-btn danger sm">✕</button>
-                            </div>
-                          </td>
-                        </tr>
+                        {umkmList.length === 0 ? (
+                          <tr>
+                            <td colSpan={4} style={{ textAlign: 'center', color: '#9ca3af', padding: 20 }}>
+                              Belum ada UMKM terdaftar.
+                            </td>
+                          </tr>
+                        ) : (
+                          umkmList.map((u) => (
+                            <tr key={u.umkm_id}>
+                              <td>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                  <div style={{ width: 32, height: 32, borderRadius: 8, background: '#eaf5ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🏪</div>
+                                  {u.nama_umkm}
+                                </div>
+                              </td>
+                              <td>{u.nama_pemilik || '—'}</td>
+                              <td>{u.kategori || '—'}</td>
+                              <td>
+                                <span className={`da-stat-badge ${u.status_operasional === 'buka' ? 'green' : 'red'}`}>
+                                  {u.status_operasional === 'buka' ? 'Buka' : 'Tutup'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -162,17 +158,27 @@ class DashboardAdminPage extends Component {
                   {/* Activity Feed */}
                   <div className="da-activity-card">
                     <div className="da-table-header" style={{ padding: '0 0 14px', marginBottom: 10, borderBottom: '1px solid #f3f4f6' }}>
-                      <div className="da-table-title">Aktivitas Terbaru</div>
+                      <div className="da-table-title">Pengguna Terdaftar Terbaru</div>
                     </div>
-                    {ACTIVITIES.map((a, i) => (
-                      <div key={i} className="da-activity-item">
-                        <div className={`da-activity-dot ${a.dot}`} />
-                        <div>
-                          <div className="da-activity-text">{a.text}</div>
-                          <div className="da-activity-time">{a.time}</div>
+                    {userList.length === 0 ? (
+                      <div style={{ color: '#9ca3af', fontSize: 13, padding: '12px 0' }}>Belum ada pengguna terdaftar.</div>
+                    ) : (
+                      userList.map((u) => (
+                        <div key={u.user_id} className="da-activity-item">
+                          <div className={`da-activity-dot ${ROLE_DOT[u.role] || 'green'}`} />
+                          <div>
+                            <div className="da-activity-text">
+                              {u.nama} mendaftar sebagai <strong>{u.role}</strong>
+                            </div>
+                            <div className="da-activity-time">
+                              {u.tanggal_daftar
+                                ? new Date(u.tanggal_daftar).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                                : '—'}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
 

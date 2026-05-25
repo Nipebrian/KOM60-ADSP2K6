@@ -182,7 +182,7 @@ class PesananPage extends Component {
                         <div>
                           <div className="ps-umkm-name">{p.nama_umkm}</div>
                           <div className="ps-order-meta">
-                            {formatDate(p.created_at)} • ID: {p.pesanan_id?.slice(0, 8).toUpperCase()}
+                            {formatDate(p.tanggal_pesan)} • ID: {p.pesanan_id?.slice(0, 8).toUpperCase()}
                           </div>
                         </div>
                       </div>

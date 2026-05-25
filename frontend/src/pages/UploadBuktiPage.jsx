@@ -74,12 +74,16 @@ class UploadBuktiPage extends Component {
     this.setState({ uploading: true, error: '' });
     try {
       const formData = new FormData();
-      formData.append('bukti', file);
+      formData.append('file', file);
       formData.append('metode_pembayaran', metode);
       await pesananAPI.uploadBukti(pesananId, formData);
       this.setState({ success: true });
     } catch (err) {
-      this.setState({ error: err.response?.data?.detail || 'Gagal upload bukti. Coba lagi.' });
+      const detail = err.response?.data?.detail;
+      const msg = Array.isArray(detail)
+        ? detail.map(e => e.msg || String(e)).join(', ')
+        : (typeof detail === 'string' ? detail : 'Gagal upload bukti. Coba lagi.');
+      this.setState({ error: msg });
     } finally {
       this.setState({ uploading: false });
     }

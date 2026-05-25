@@ -21,6 +21,15 @@ class UMKM(Base):
     status_operasional = Column(String(20), default="buka")  # buka, tutup, libur
     tanggal_dibuat = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     rating_rata_rata = Column(Float, default=0.0)
+    # Metode pembayaran
+    nomor_rekening = Column(String(50), nullable=True)
+    nama_bank = Column(String(100), nullable=True)
+    nomor_ewallet = Column(String(50), nullable=True)
+    foto_qris = Column(String(255), nullable=True)
+
+    @property
+    def nama_pemilik(self):
+        return self.pemilik.nama if self.pemilik else None
 
     # Relationships
     pemilik = relationship("User", backref="umkm")

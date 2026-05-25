@@ -13,6 +13,10 @@ class UMKMCreate(BaseModel):
     jam_buka: Optional[str] = None
     jam_tutup: Optional[str] = None
     foto_toko: Optional[str] = None
+    # Metode pembayaran
+    nomor_rekening: Optional[str] = None
+    nama_bank: Optional[str] = None
+    nomor_ewallet: Optional[str] = None
 
 
 class UMKMUpdate(BaseModel):
@@ -25,12 +29,17 @@ class UMKMUpdate(BaseModel):
     jam_tutup: Optional[str] = None
     foto_toko: Optional[str] = None
     status_operasional: Optional[str] = None
+    # Metode pembayaran
+    nomor_rekening: Optional[str] = None
+    nama_bank: Optional[str] = None
+    nomor_ewallet: Optional[str] = None
 
 
 class UMKMResponse(BaseModel):
     """Schema response data UMKM."""
     umkm_id: str
     pemilik_id: str
+    nama_pemilik: Optional[str] = None
     nama_umkm: str
     deskripsi: Optional[str] = None
     alamat: str
@@ -38,9 +47,14 @@ class UMKMResponse(BaseModel):
     jam_buka: Optional[str] = None
     jam_tutup: Optional[str] = None
     foto_toko: Optional[str] = None
+    foto_qris: Optional[str] = None
     status_operasional: str
     tanggal_dibuat: Optional[datetime] = None
     rating_rata_rata: float
+    # Metode pembayaran
+    nomor_rekening: Optional[str] = None
+    nama_bank: Optional[str] = None
+    nomor_ewallet: Optional[str] = None
 
     class Config:
         from_attributes = True

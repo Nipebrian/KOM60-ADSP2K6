@@ -49,6 +49,7 @@ class DirektoriPage extends Component {
       // applied filters used in API call
       appliedKategori: initKat ? [initKat] : [],
       appliedStatus: 'semua',
+      appliedRating: 0,
       // search
       searchInput: initSearch,
       appliedSearch: initSearch,
@@ -85,6 +86,12 @@ class DirektoriPage extends Component {
         data = data.sort((a, b) => a.nama_umkm.localeCompare(b.nama_umkm));
       }
 
+      // Filter rating client-side
+      const { appliedRating } = this.state;
+      if (appliedRating > 0) {
+        data = data.filter(u => (u.rating_rata_rata || 0) >= appliedRating);
+      }
+
       this.setState({ umkms: data, total: res.data.total || 0, page });
     } catch {
       this.setState({ umkms: [], total: 0 });
@@ -109,6 +116,7 @@ class DirektoriPage extends Component {
       (prev) => ({
         appliedKategori: prev.filterKategori,
         appliedStatus: prev.filterStatus,
+        appliedRating: prev.filterRating,
         appliedSearch: prev.searchInput,
         page: 1,
       }),
@@ -200,11 +208,14 @@ class DirektoriPage extends Component {
           <div className="dir-nav-links">
             <Link to="/" className="dir-nav-link">Home</Link>
             <Link to="/direktori" className="dir-nav-link active">Directory</Link>
+            <Link to="/pesanan" className="dir-nav-link">Pesanan Saya</Link>
           </div>
 
           <div className="dir-nav-right">
             <button className="dir-icon-btn" title="Notifikasi">🔔</button>
-            <button className="dir-icon-btn" title="Keranjang">🛒</button>
+            <Link to="/keranjang" style={{ textDecoration: 'none' }}>
+              <button className="dir-icon-btn" title="Keranjang">🛒</button>
+            </Link>
             <div className="dir-avatar" title={user.nama}>
               {this.getInitial(user.nama)}
             </div>

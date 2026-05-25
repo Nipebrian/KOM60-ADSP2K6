@@ -1,11 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
+import uuid, os
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
+from app.core.config import UPLOAD_DIR
 from app.models.user import User
 from app.models.umkm import UMKM
 from app.models.menu import Menu
 from app.schemas.menu import MenuCreate, MenuUpdate, MenuResponse
+
+ALLOWED_IMG_EXT = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+MAX_IMG_SIZE = 5 * 1024 * 1024  # 5MB
 
 router = APIRouter(prefix="/api/umkm/{umkm_id}/menu", tags=["Menu"])
 
@@ -111,3 +116,37 @@ def delete_menu(
     db.delete(menu)
     db.commit()
     return {"message": "Menu berhasil dihapus"}
+
+
+@router.post("/{menu_id}/upload-foto", response_model=MenuResponse)
+async def upload_foto_menu(
+    umkm_id: str,
+    menu_id: str,
+    file: UploadFile = File(...),
+    current_user: User = Depends(require_role(["umkm"])),
+    db: Session = Depends(get_db),
+):
+    """Upload foto menu."""
+    umkm = db.query(UMKM).filter(UMKM.umkm_id == umkm_id).first()
+    if not umkm or umkm.pemilik_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    menu = db.query(Menu).filter(Menu.menu_id == menu_id, Menu.umkm_id == umkm_id).first()
+    if not menu:
+        raise HTTPException(status_code=404, detail="Menu tidak ditemukan")
+
+    ext = os.path.splitext(file.filename or '')[1].lower()
+    if ext not in ALLOWED_IMG_EXT:
+        raise HTTPException(status_code=400, detail="Format file tidak didukung. Gunakan JPG, PNG, GIF, atau WEBP.")
+    contents = await file.read()
+    if len(contents) > MAX_IMG_SIZE:
+        raise HTTPException(status_code=400, detail="Ukuran file terlalu besar. Maksimal 5MB.")
+
+    filename = f"{uuid.uuid4()}{ext}"
+    with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
+        f.write(contents)
+
+    menu.foto_menu = f"/uploads/{filename}"
+    db.commit()
+    db.refresh(menu)
+    return MenuResponse.model_validate(menu)

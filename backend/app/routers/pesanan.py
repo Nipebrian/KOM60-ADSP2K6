@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query, Form
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime, timezone
 import uuid
@@ -17,6 +17,12 @@ from app.schemas.pesanan import (
 )
 
 router = APIRouter(prefix="/api/pesanan", tags=["Pesanan"])
+
+
+PLATFORM_FEE = 2000.0
+
+ALLOWED_UPLOAD_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5MB
 
 
 def _build_pesanan_response(pesanan: Pesanan) -> PesananResponse:
@@ -47,6 +53,7 @@ def _build_pesanan_response(pesanan: Pesanan) -> PesananResponse:
     return PesananResponse(
         pesanan_id=pesanan.pesanan_id,
         mahasiswa_id=pesanan.mahasiswa_id,
+        nama_mahasiswa=pesanan.mahasiswa.nama if pesanan.mahasiswa else None,
         umkm_id=pesanan.umkm_id,
         nama_umkm=pesanan.umkm.nama_umkm if pesanan.umkm else None,
         tanggal_pesan=pesanan.tanggal_pesan,
@@ -106,12 +113,12 @@ def create_pesanan(
         )
         pesanan.detail_list.append(detail)
 
-    pesanan.total_harga = total
+    pesanan.total_harga = total + PLATFORM_FEE
 
     # Buat record pembayaran (kosong, akan diisi saat upload bukti)
     pembayaran = Pembayaran(
         pesanan_id=pesanan.pesanan_id,
-        jumlah_bayar=total,
+        jumlah_bayar=total + PLATFORM_FEE,
         status_pembayaran="belum_bayar",
     )
     pesanan.pembayaran = pembayaran
@@ -133,6 +140,7 @@ def get_my_pesanan(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
         joinedload(Pesanan.umkm),
+        joinedload(Pesanan.mahasiswa),
     ).filter(Pesanan.mahasiswa_id == current_user.user_id)
 
     if status:
@@ -153,6 +161,7 @@ def get_pesanan(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
         joinedload(Pesanan.umkm),
+        joinedload(Pesanan.mahasiswa),
     ).filter(Pesanan.pesanan_id == pesanan_id).first()
 
     if not pesanan:
@@ -172,7 +181,7 @@ def get_pesanan(
 @router.post("/{pesanan_id}/bukti", response_model=PesananResponse)
 async def upload_bukti_pembayaran(
     pesanan_id: str,
-    metode_pembayaran: str,
+    metode_pembayaran: str = Form(...),
     file: UploadFile = File(...),
     current_user: User = Depends(require_role(["mahasiswa"])),
     db: Session = Depends(get_db),
@@ -182,6 +191,7 @@ async def upload_bukti_pembayaran(
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.umkm),
+        joinedload(Pesanan.mahasiswa),
     ).filter(
         Pesanan.pesanan_id == pesanan_id,
         Pesanan.mahasiswa_id == current_user.user_id,
@@ -192,11 +202,17 @@ async def upload_bukti_pembayaran(
     if pesanan.status_pesanan != "menunggu_pembayaran":
         raise HTTPException(status_code=400, detail="Pesanan tidak dalam status menunggu pembayaran")
 
+    # Validasi file upload
+    ext = os.path.splitext(file.filename or '')[1].lower()
+    if ext not in ALLOWED_UPLOAD_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Format file tidak didukung. Gunakan JPG, PNG, GIF, atau WEBP.")
+    contents = await file.read()
+    if len(contents) > MAX_UPLOAD_SIZE:
+        raise HTTPException(status_code=400, detail="Ukuran file terlalu besar. Maksimal 5MB.")
+
     # Simpan file
-    ext = os.path.splitext(file.filename)[1]
     filename = f"{uuid.uuid4()}{ext}"
     filepath = os.path.join(UPLOAD_DIR, filename)
-    contents = await file.read()
     with open(filepath, "wb") as f:
         f.write(contents)
 
@@ -238,6 +254,7 @@ def get_pesanan_masuk(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
         joinedload(Pesanan.umkm),
+        joinedload(Pesanan.mahasiswa),
     ).filter(Pesanan.umkm_id == umkm.umkm_id)
 
     if status:
@@ -259,6 +276,7 @@ def update_status_pesanan(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
         joinedload(Pesanan.umkm),
+        joinedload(Pesanan.mahasiswa),
     ).filter(Pesanan.pesanan_id == pesanan_id).first()
 
     if not pesanan:
@@ -299,6 +317,7 @@ def verifikasi_bukti(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
         joinedload(Pesanan.umkm),
+        joinedload(Pesanan.mahasiswa),
     ).filter(Pesanan.pesanan_id == pesanan_id).first()
 
     if not pesanan:

@@ -75,6 +75,20 @@ class DetailUMKMPage extends Component {
   };
 
   // Cart actions
+  syncCartToLocalStorage = (cart) => {
+    const { umkm } = this.state;
+    const items = Object.values(cart).map(({ item, qty }) => ({
+      menu_id: item.menu_id,
+      nama_menu: item.nama_menu,
+      harga: item.harga,
+      jumlah: qty,
+      umkm_id: umkm?.umkm_id,
+      nama_umkm: umkm?.nama_umkm,
+      foto_menu: item.foto_menu || null,
+    }));
+    localStorage.setItem('cart', JSON.stringify(items));
+  };
+
   addToCart = (menu) => {
     this.setState((prev) => {
       const existing = prev.cart[menu.menu_id];
@@ -87,7 +101,7 @@ class DetailUMKMPage extends Component {
           },
         },
       };
-    });
+    }, () => this.syncCartToLocalStorage(this.state.cart));
   };
 
   removeFromCart = (menuId) => {
@@ -100,7 +114,7 @@ class DetailUMKMPage extends Component {
         return { cart: newCart };
       }
       return { cart: { ...prev.cart, [menuId]: { ...existing, qty: existing.qty - 1 } } };
-    });
+    }, () => this.syncCartToLocalStorage(this.state.cart));
   };
 
   getCartTotal = () => {
@@ -355,7 +369,7 @@ class DetailUMKMPage extends Component {
           <Link to="/direktori" className="det-back-btn" title="Kembali">←</Link>
           <Link to="/" className="det-nav-brand">IPB Food Hub</Link>
           <div className="det-nav-right">
-            <button className="det-icon-btn" title="Keranjang">🛒</button>
+            <button className="det-icon-btn" title="Keranjang" onClick={() => this.props.navigate('/keranjang')}>🛒</button>
             <button className="det-icon-btn" title="Notifikasi">🔔</button>
             <div className="det-avatar">{this.getInitial(user.nama)}</div>
           </div>
@@ -488,7 +502,7 @@ class DetailUMKMPage extends Component {
             </div>
             <button
               className="det-cart-btn"
-              onClick={() => alert('Fitur checkout akan segera hadir!')}
+              onClick={() => this.props.navigate('/keranjang')}
             >
               Lihat Keranjang →
             </button>

@@ -25,9 +25,8 @@ Base.metadata.create_all(bind=engine)
 
 
 def _run_migrations():
-    """Tambahkan kolom baru ke tabel yang sudah ada."""
+    """Tambahkan kolom baru ke tabel yang sudah ada (SQLite tidak support IF NOT EXISTS)."""
     from app.core.database import SessionLocal
-    import sqlalchemy
     db = SessionLocal()
     new_columns = [
         ("umkm", "nomor_rekening", "VARCHAR(50)"),
@@ -37,22 +36,22 @@ def _run_migrations():
     ]
     for table, col, col_type in new_columns:
         try:
-            db.execute(sqlalchemy.text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
+            db.execute(__import__('sqlalchemy').text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
             db.commit()
         except Exception:
-            db.rollback()
+            db.rollback()  # Kolom sudah ada, abaikan
     db.close()
 
 _run_migrations()
-
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000,http://localhost:4173")
-ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 app = FastAPI(
     title="IPB Food Hub API",
     description="Backend API untuk sistem pemesanan makanan kampus IPB",
     version="1.0.0",
 )
+
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000,http://localhost:4173")
+ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
@@ -124,8 +123,3 @@ app.include_router(security.router)
 @app.get("/", tags=["Health"])
 def root():
     return {"status": "ok", "message": "IPB Food Hub API is running"}
-
-
-@app.get("/api/health", tags=["Health"])
-def health_check():
-    return {"status": "ok"}

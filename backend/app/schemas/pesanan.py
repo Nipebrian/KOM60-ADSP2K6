@@ -32,12 +32,14 @@ class PesananCreate(BaseModel):
     items: list[DetailPesananCreate]
     catatan_pesanan: Optional[str] = None
     waktu_pengambilan: Optional[datetime] = None
+    platform_fee: float = 2000.0
 
 
 class PesananResponse(BaseModel):
     """Schema response data pesanan."""
     pesanan_id: str
     mahasiswa_id: str
+    nama_mahasiswa: Optional[str] = None
     umkm_id: str
     nama_umkm: Optional[str] = None
     tanggal_pesan: Optional[datetime] = None

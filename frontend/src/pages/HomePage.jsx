@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { umkmAPI, promoAPI } from '../services/api';
+import { withRouter } from '../utils/withRouter';
 import './HomePage.css';
 
 const KATEGORI_MAP = {
@@ -75,12 +76,12 @@ class HomePage extends Component {
   handleSearch = (e) => {
     e.preventDefault();
     if (this.state.searchQuery.trim()) {
-      window.location.href = `/direktori?search=${encodeURIComponent(this.state.searchQuery)}`;
+      this.props.navigate(`/direktori?search=${encodeURIComponent(this.state.searchQuery)}`);
     }
   };
 
   handleKategori = (key) => {
-    window.location.href = `/direktori?kategori=${key}`;
+    this.props.navigate(`/direktori?kategori=${key}`);
   };
 
   getInitial = (nama = '') => nama.charAt(0).toUpperCase() || 'U';
@@ -119,7 +120,10 @@ class HomePage extends Component {
           </div>
 
           <div className="hp-nav-right">
-            <Link to="/direktori" style={{ textDecoration: 'none' }}>
+            <Link to="/pesanan" style={{ textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#006B3F', marginRight: 4 }}>
+              📋 Pesanan
+            </Link>
+            <Link to="/keranjang" style={{ textDecoration: 'none' }}>
               <button className="hp-icon-btn" title="Keranjang">🛒</button>
             </Link>
             <button className="hp-icon-btn" title="Notifikasi">🔔</button>
@@ -291,7 +295,7 @@ class HomePage extends Component {
             </div>
           </div>
           <div className="hp-footer-bottom">
-            © 2024 IPB Food Hub. Bridging academic prestige and modern culinary convenience.
+            © 2026 IPB Food Hub. Bridging academic prestige and modern culinary convenience.
           </div>
         </footer>
       </div>
@@ -299,4 +303,4 @@ class HomePage extends Component {
   }
 }
 
-export default HomePage;
+export default withRouter(HomePage);

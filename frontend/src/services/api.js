@@ -23,7 +23,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      window.location.href = '/KOM60-ADSP2K6/login';
     }
     return Promise.reject(error);
   }
@@ -52,6 +52,8 @@ export const umkmAPI = {
   create: (data) => api.post('/api/umkm', data),
   update: (id, data) => api.put(`/api/umkm/${id}`, data),
   delete: (id) => api.delete(`/api/umkm/${id}`),
+  uploadFotoToko: (id, formData) => api.post(`/api/umkm/${id}/upload-foto`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadQris: (id, formData) => api.post(`/api/umkm/${id}/upload-qris`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
 export const menuAPI = {
@@ -59,6 +61,7 @@ export const menuAPI = {
   create: (umkmId, data) => api.post(`/api/umkm/${umkmId}/menu`, data),
   update: (umkmId, menuId, data) => api.put(`/api/umkm/${umkmId}/menu/${menuId}`, data),
   delete: (umkmId, menuId) => api.delete(`/api/umkm/${umkmId}/menu/${menuId}`),
+  uploadFoto: (umkmId, menuId, formData) => api.post(`/api/umkm/${umkmId}/menu/${menuId}/upload-foto`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
 export const pesananAPI = {
@@ -95,6 +98,11 @@ export const adminAPI = {
   listUsers: (params) => api.get('/api/admin/users', { params }),
   updateUserStatus: (userId, status) => api.put(`/api/admin/users/${userId}/status?new_status=${status}`),
   deleteUser: (userId) => api.delete(`/api/admin/users/${userId}`),
+};
+
+export const securityAPI = {
+  getStats: () => api.get('/api/security/stats'),
+  getAuditLogs: (params) => api.get('/api/security/audit-logs', { params }),
 };
 
 export default api;

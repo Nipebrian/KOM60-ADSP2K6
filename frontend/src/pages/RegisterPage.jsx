@@ -5,8 +5,8 @@ import heroImg from '../assets/hero.png';
 import './Auth.css';
 
 const FAKULTAS_OPTIONS = [
-  'FAPERTA', 'FKH', 'FPIK', 'FAPET', 'FAHUTAN',
-  'FATETA', 'FMIPA', 'FEM', 'FISIB', 'FIKES',
+  'FAPERTA', 'SKHB', 'FPIK', 'FAPET', 'FAHUTAN',
+  'FTT', 'FMIPA', 'FEM', 'FEMA', 'FK', 'SSMI',
 ];
 
 function getPasswordStrength(pw) {
@@ -84,7 +84,12 @@ class RegisterPage extends Component {
   };
 
   render() {
-    if (this.state.redirect) return <Navigate to="/" replace />;
+    if (this.state.redirect || localStorage.getItem('token')) {
+          const user = JSON.parse(localStorage.getItem('user') || 'null');
+          if (user?.role === 'mahasiswa') return <Navigate to="/dashboard" replace />;
+          if (user?.role === 'umkm') return <Navigate to="/dashboard/umkm" replace />;
+          return <Navigate to="/" replace />;
+    }
 
     const {
       role, nama, email, no_telp, nim, fakultas,
@@ -270,7 +275,7 @@ class RegisterPage extends Component {
             </p>
           </div>
 
-          <p className="auth-copyright">© 2024 IPB Food Hub — Kelompok 6 P2</p>
+          <p className="auth-copyright">© 2026 IPB Food Hub — Kelompok 6 P2</p>
         </div>
       </div>
     );

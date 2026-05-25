@@ -101,6 +101,9 @@ class KeranjangPage extends Component {
             <span className="kr-nav-sep">›</span>
             <span className="kr-nav-current">Keranjang Pesanan</span>
           </div>
+          <Link to="/pesanan" style={{ textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#006B3F' }}>
+            📋 Pesanan Saya
+          </Link>
         </nav>
 
         <main className="kr-main">
@@ -198,10 +201,6 @@ class KeranjangPage extends Component {
                         <span className="kr-sum-val">{formatRp(item.harga * item.jumlah)}</span>
                       </div>
                     ))}
-                    <div className="kr-summary-row kr-sum-fee">
-                      <span className="kr-sum-label">Biaya Layanan (Platform Fee)</span>
-                      <span className="kr-sum-val">{formatRp(PLATFORM_FEE)}</span>
-                    </div>
                   </div>
 
                   <div className="kr-divider" />
@@ -252,7 +251,7 @@ class KeranjangPage extends Component {
             </div>
           </div>
           <div className="kr-footer-bottom">
-            © 2024 IPB FoodHub, Bridging academic heritage and modern convenience.
+            © 2026 IPB FoodHub, Bridging academic heritage and modern convenience.
           </div>
         </footer>
       </div>

@@ -14,7 +14,7 @@ const CAT_OPTS = [
   { key: 'dessert', label: 'Dessert' },
 ];
 
-const EMPTY_FORM = { nama_menu: '', kategori: 'makanan', harga: '', deskripsi: '', tersedia: true };
+const EMPTY_FORM = { nama_menu: '', kategori: 'makanan', harga: '', deskripsi: '', status_ketersediaan: true };
 
 class KelolaMenuPage extends Component {
   constructor(props) {
@@ -29,6 +29,8 @@ class KelolaMenuPage extends Component {
       showModal: false,
       editMenu: null,
       form: { ...EMPTY_FORM },
+      fotoMenuFile: null,
+      fotoMenuPreview: null,
       formLoading: false,
       formError: '',
       page: 1,
@@ -56,27 +58,51 @@ class KelolaMenuPage extends Component {
     } catch { this.setState({ loading: false }); }
   };
 
-  openAdd = () => this.setState({ showModal: true, editMenu: null, form: { ...EMPTY_FORM }, formError: '' });
-  openEdit = (m) => this.setState({ showModal: true, editMenu: m, form: { nama_menu: m.nama_menu, kategori: m.kategori, harga: m.harga, deskripsi: m.deskripsi || '', tersedia: m.tersedia }, formError: '' });
-  closeModal = () => this.setState({ showModal: false, formError: '' });
+  openAdd = () => this.setState({ showModal: true, editMenu: null, form: { ...EMPTY_FORM }, fotoMenuFile: null, fotoMenuPreview: null, formError: '' });
+  openEdit = (m) => this.setState({
+    showModal: true, editMenu: m,
+    form: { nama_menu: m.nama_menu, kategori: m.kategori, harga: m.harga, deskripsi: m.deskripsi || '', status_ketersediaan: m.status_ketersediaan },
+    fotoMenuFile: null, fotoMenuPreview: m.foto_menu || null, formError: '',
+  });
+  closeModal = () => this.setState({ showModal: false, formError: '', fotoMenuFile: null, fotoMenuPreview: null });
 
   handleFormChange = (field, val) => this.setState(prev => ({ form: { ...prev.form, [field]: val } }));
 
+  handleFotoMenu = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    this.setState({ fotoMenuFile: file, fotoMenuPreview: URL.createObjectURL(file) });
+  };
+
   handleSave = async () => {
-    const { form, editMenu, toko } = this.state;
+    const { form, editMenu, toko, fotoMenuFile } = this.state;
     if (!form.nama_menu.trim() || !form.harga) {
       this.setState({ formError: 'Nama menu dan harga wajib diisi.' });
       return;
     }
     this.setState({ formLoading: true, formError: '' });
     try {
-      const payload = { ...form, harga: Number(form.harga) };
+      const payload = {
+        nama_menu: form.nama_menu,
+        kategori: form.kategori,
+        harga: Number(form.harga),
+        deskripsi: form.deskripsi,
+        status_ketersediaan: form.status_ketersediaan,
+      };
+      let savedMenu;
       if (editMenu) {
-        await menuAPI.update(toko.umkm_id, editMenu.menu_id, payload);
+        const res = await menuAPI.update(toko.umkm_id, editMenu.menu_id, payload);
+        savedMenu = res.data;
       } else {
-        await menuAPI.create(toko.umkm_id, payload);
+        const res = await menuAPI.create(toko.umkm_id, payload);
+        savedMenu = res.data;
       }
-      this.setState({ showModal: false });
+      if (fotoMenuFile) {
+        const fd = new FormData();
+        fd.append('file', fotoMenuFile);
+        await menuAPI.uploadFoto(toko.umkm_id, savedMenu.menu_id, fd);
+      }
+      this.setState({ showModal: false, fotoMenuFile: null, fotoMenuPreview: null });
       await this.fetchMenus(toko.umkm_id);
     } catch (err) {
       this.setState({ formError: err.response?.data?.detail || 'Gagal menyimpan menu.' });
@@ -97,7 +123,7 @@ class KelolaMenuPage extends Component {
   handleToggle = async (m) => {
     const { toko } = this.state;
     try {
-      await menuAPI.update(toko.umkm_id, m.menu_id, { ...m, tersedia: !m.tersedia });
+      await menuAPI.update(toko.umkm_id, m.menu_id, { status_ketersediaan: !m.status_ketersediaan });
       await this.fetchMenus(toko.umkm_id);
     } catch { alert('Gagal update status.'); }
   };
@@ -242,6 +268,22 @@ class KelolaMenuPage extends Component {
                 <button className="du-modal-close" onClick={this.closeModal}>✕</button>
               </div>
 
+              {/* Foto Menu */}
+              <div className="du-field">
+                <label>Foto Menu</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6 }}>
+                  <div style={{ width: 70, height: 70, borderRadius: 10, background: '#f3f4f6', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, border: '2px dashed #d1d5db', flexShrink: 0 }}>
+                    {this.state.fotoMenuPreview
+                      ? <img src={this.state.fotoMenuPreview} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : '🍽️'}
+                  </div>
+                  <label style={{ cursor: 'pointer' }}>
+                    <span className="du-btn outline sm">📷 Pilih Foto</span>
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={this.handleFotoMenu} />
+                  </label>
+                </div>
+              </div>
+
               <div className="du-field">
                 <label>Nama Menu</label>
                 <input value={form.nama_menu} onChange={e => this.handleFormChange('nama_menu', e.target.value)} placeholder="Nama hidangan" />
@@ -263,11 +305,11 @@ class KelolaMenuPage extends Component {
               </div>
               <div className="du-field">
                 <label>Deskripsi</label>
-                <textarea value={form.deskripsi} onChange={e => this.handleFormChange('deskripsi', e.target.value)} placeholder="Deskripsi singkat menu..." rows={3} />
+                <textarea value={form.deskripsi} onChange={e => this.handleFormChange('deskripsi', e.target.value)} placeholder="Deskripsi singkat menu..." rows={2} />
               </div>
               <div className="du-field">
                 <label>
-                  <input type="checkbox" checked={form.tersedia} onChange={e => this.handleFormChange('tersedia', e.target.checked)} style={{ marginRight: 8 }} />
+                  <input type="checkbox" checked={form.status_ketersediaan} onChange={e => this.handleFormChange('status_ketersediaan', e.target.checked)} style={{ marginRight: 8 }} />
                   Tersedia
                 </label>
               </div>

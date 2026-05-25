@@ -6,7 +6,7 @@ from datetime import datetime
 class UserRegister(BaseModel):
     """Schema untuk registrasi user baru."""
     nama: str
-    email: str
+    email: EmailStr
     password: str
     no_telp: Optional[str] = None
     role: str  # mahasiswa, umkm, admin

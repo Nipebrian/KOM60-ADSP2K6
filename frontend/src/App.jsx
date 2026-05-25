@@ -13,8 +13,10 @@ import DashboardUMKMPage  from './pages/DashboardUMKMPage';
 import KelolaMenuPage     from './pages/KelolaMenuPage';
 import PesananMasukPage   from './pages/PesananMasukPage';
 import KelolaPromoPage    from './pages/KelolaPromoPage';
-import DashboardAdminPage from './pages/DashboardAdminPage';
-import KelolaAkunPage     from './pages/KelolaAkunPage';
+import DashboardAdminPage    from './pages/DashboardAdminPage';
+import KelolaAkunPage        from './pages/KelolaAkunPage';
+import SecurityDashboardPage from './pages/SecurityDashboardPage';
+import AuditLogPage          from './pages/AuditLogPage';
 
 class App extends Component {
   render() {
@@ -40,8 +42,10 @@ class App extends Component {
           <Route path="/dashboard/umkm/promo"          element={<KelolaPromoPage />} />
 
           {/* ── Admin Dashboard ── */}
-          <Route path="/dashboard/admin"               element={<DashboardAdminPage />} />
-          <Route path="/dashboard/admin/users"         element={<KelolaAkunPage />} />
+          <Route path="/dashboard/admin"                    element={<DashboardAdminPage />} />
+          <Route path="/dashboard/admin/users"              element={<KelolaAkunPage />} />
+          <Route path="/dashboard/admin/security"           element={<SecurityDashboardPage />} />
+          <Route path="/dashboard/admin/security/logs"      element={<AuditLogPage />} />
 
           {/* ── Fallback ── */}
           <Route path="*" element={<Navigate to="/" replace />} />

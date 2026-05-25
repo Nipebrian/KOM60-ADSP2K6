@@ -1,0 +1,124 @@
+/* ── Security Dashboard CSS ── */
+
+.sec-shield-icon { font-size: 20px; }
+
+/* Section Headers */
+.sec-section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.sec-section-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.sec-section-icon.auth   { background: #eff6ff; }
+.sec-section-icon.authz  { background: #f0fdf4; }
+.sec-section-icon.acct   { background: #fef3c7; }
+.sec-section-title  { font-size: 16px; font-weight: 700; color: #111827; }
+.sec-section-sub    { font-size: 12.5px; color: #6b7280; margin-top: 2px; }
+
+/* Success Rate Bar */
+.sec-rate-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+  margin-bottom: 8px;
+}
+.sec-rate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.sec-rate-label { font-size: 14px; font-weight: 600; color: #374151; }
+.sec-rate-value { font-size: 22px; font-weight: 800; }
+.sec-rate-bar-bg {
+  height: 12px;
+  background: #f3f4f6;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.sec-rate-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.8s ease;
+}
+
+/* Role Bars */
+.sec-role-item { margin-bottom: 14px; }
+.sec-role-bar-bg {
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.sec-role-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.8s ease;
+}
+.sec-role-bar-fill.blue   { background: #3b82f6; }
+.sec-role-bar-fill.yellow { background: #f59e0b; }
+.sec-role-bar-fill.purple { background: #8b5cf6; }
+
+/* Method Badge */
+.sec-method-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+/* Alerts */
+.sec-alert-error {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.sec-alert-info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 14px;
+}
+.sec-alert-info code {
+  background: #dbeafe;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Audit Log Filter Bar */
+.sec-filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  align-items: center;
+}
+.sec-input {
+  padding: 8px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px;
+  font-size: 13px;
+  color: #111827;
+  background: #fafafa;
+  font-family: 'Inter', sans-serif;
+}
+.sec-input:focus { outline: none; border-color: #006B3F; background: #fff; }

@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { icon: '👥', label: 'Kelola Akun',         path: '/dashboard/admin/users' },
   { icon: '🏪', label: 'Kelola UMKM',         path: '/dashboard/admin/umkm' },
   { icon: '📊', label: 'Monitor Transaksi',   path: '/dashboard/admin/transaksi' },
-  { icon: '📋', label: 'Activity Log',        path: '/dashboard/admin/log' },
+  { icon: '🛡️', label: 'Keamanan (AAA)',       path: '/dashboard/admin/security' },
   { icon: '⚙', label: 'Settings',            path: '/dashboard/admin/settings' },
 ];
 
@@ -15,7 +15,7 @@ class AdminSidebar extends Component {
   handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/login';
+    window.location.href = '/KOM60-ADSP2K6/login';
   };
 
   render() {

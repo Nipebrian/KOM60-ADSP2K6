@@ -38,6 +38,9 @@ class LoginPage extends Component {
 
   render() {
     if (this.state.redirect || localStorage.getItem('token')) {
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if (user?.role === 'admin') return <Navigate to="/dashboard/admin" replace />;
+      if (user?.role === 'umkm') return <Navigate to="/dashboard/umkm" replace />;
       return <Navigate to="/" replace />;
     }
 
@@ -78,7 +81,7 @@ class LoginPage extends Component {
                     id="email"
                     type="email"
                     name="email"
-                    placeholder="nim@apps.ipb.ac.id"
+                    placeholder="username@apps.ipb.ac.id"
                     value={email}
                     onChange={this.handleChange}
                     required
@@ -129,7 +132,7 @@ class LoginPage extends Component {
             </p>
           </div>
 
-          <p className="auth-copyright">© 2024 IPB Food Hub — Kelompok 6 P2</p>
+          <p className="auth-copyright">© 2026 IPB Food Hub — Kelompok 6 P2</p>
         </div>
       </div>
     );
