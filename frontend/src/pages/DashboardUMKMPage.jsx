@@ -312,7 +312,7 @@ class DashboardUMKMPage extends Component {
                       ulasanList.map(u => (
                         <div key={u.rating_id} className="du-review-item">
                           <div className="du-review-header">
-                            <div className="du-reviewer-name">{u.nama_pengguna || 'Mahasiswa'}</div>
+                            <div className="du-reviewer-name">{u.nama_mahasiswa || 'Mahasiswa'}</div>
                             <div className="du-review-stars">{'★'.repeat(u.nilai)}{'☆'.repeat(5 - u.nilai)}</div>
                           </div>
                           <div className="du-review-text">{u.komentar || '-'}</div>

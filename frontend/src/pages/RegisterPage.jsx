@@ -86,7 +86,7 @@ class RegisterPage extends Component {
   render() {
     if (this.state.redirect || localStorage.getItem('token')) {
           const user = JSON.parse(localStorage.getItem('user') || 'null');
-          if (user?.role === 'mahasiswa') return <Navigate to="/dashboard" replace />;
+          if (user?.role === 'mahasiswa') return <Navigate to="/" replace />;
           if (user?.role === 'umkm') return <Navigate to="/dashboard/umkm" replace />;
           return <Navigate to="/" replace />;
     }

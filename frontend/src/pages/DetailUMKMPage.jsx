@@ -272,7 +272,7 @@ class DetailUMKMPage extends Component {
                 <div className="det-ulasan-header">
                   <div className="det-ulasan-avatar">{this.getInitial(u.nama_user || 'A')}</div>
                   <div className="det-ulasan-meta">
-                    <div className="det-ulasan-name">{u.nama_user || 'Pengguna'}</div>
+                    <div className="det-ulasan-name">{u.nama_mahasiswa || 'Pengguna'}</div>
                     <div className="det-ulasan-date">
                       {new Date(u.tanggal_rating).toLocaleDateString('id-ID', {
                         day: 'numeric', month: 'long', year: 'numeric'

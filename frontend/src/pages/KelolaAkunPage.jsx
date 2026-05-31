@@ -189,7 +189,7 @@ class KelolaAkunPage extends Component {
                                 </span>
                               </div>
                             </td>
-                            <td style={{ color: '#6b7280', fontSize: 13 }}>{formatDate(u.created_at)}</td>
+                            <td style={{ color: '#6b7280', fontSize: 13 }}>{formatDate(u.tanggal_daftar)}</td>
                             <td>
                               <div style={{ display: 'flex', gap: 6 }}>
                                 <button

@@ -223,12 +223,12 @@ class KelolaMenuPage extends Component {
                             <td>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                 <label className="du-toggle">
-                                  <input type="checkbox" checked={m.tersedia} onChange={() => this.handleToggle(m)} />
+                                  <input type="checkbox" checked={m.status_ketersediaan} onChange={() => this.handleToggle(m)} />
                                   <div className="du-toggle-track" />
                                   <div className="du-toggle-thumb" />
                                 </label>
-                                <span style={{ fontSize: 13, fontWeight: 600, color: m.tersedia ? '#15803d' : '#6b7280' }}>
-                                  {m.tersedia ? 'Tersedia' : 'Habis'}
+                                <span style={{ fontSize: 13, fontWeight: 600, color: m.status_ketersediaan ? '#15803d' : '#6b7280' }}>
+                                  {m.status_ketersediaan ? 'Tersedia' : 'Habis'}
                                 </span>
                               </div>
                             </td>

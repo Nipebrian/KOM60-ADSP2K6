@@ -33,7 +33,7 @@ class DashboardAdminPage extends Component {
       this.setState({
         stats: statsRes.status === 'fulfilled' ? statsRes.value.data : null,
         umkmList: umkmRes.status === 'fulfilled' ? (umkmRes.value.data.data || []) : [],
-        userList: userRes.status === 'fulfilled' ? (userRes.value.data.data || []) : [],
+        userList: userRes.status === 'fulfilled' ? (userRes.value.data || []) : [],
       });
     } catch { /* silently ignore */ }
     finally { this.setState({ loading: false }); }
