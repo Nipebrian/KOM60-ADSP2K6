@@ -20,8 +20,9 @@ from app.models.audit_log import AuditLog  # noqa: F401
 # Import routers
 from app.routers import auth, admin, umkm, menu, pesanan, rating, promo, security
 
-# Buat semua tabel (termasuk audit_logs)
-Base.metadata.create_all(bind=engine)
+# Buat semua tabel hanya saat lokal (di Vercel tabel sudah ada di Neon DB)
+if not os.getenv("VERCEL"):
+    Base.metadata.create_all(bind=engine)
 
 
 def _run_migrations():
