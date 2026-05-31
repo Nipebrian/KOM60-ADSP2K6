@@ -51,8 +51,17 @@ def _run_migrations():
 
 _run_migrations()
 
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000,http://localhost:4173")
+# Strip BOM (PowerShell pipe di Windows bisa sisipkan U+FEFF ke env var)
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "").lstrip('﻿').strip()
 ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+# Fallback defaults + selalu sertakan URL production agar CORS tidak putus meski env var salah
+_DEFAULT_ORIGINS = [
+    "http://localhost:5173", "http://localhost:3000", "http://localhost:4173",
+    "https://ipb-food-hub.vercel.app",
+]
+for _o in _DEFAULT_ORIGINS:
+    if _o not in ALLOWED_ORIGINS:
+        ALLOWED_ORIGINS.append(_o)
 
 app = FastAPI(
     title="IPB Food Hub API",
