@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Di production: pakai VITE_API_URL atau fallback ke Vercel backend.
+// Di development (Vite dev server): pakai '' agar request lewat proxy lokal di vite.config.js.
+const API_BASE_URL = import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? '' : 'https://ipb-food-hub-api.vercel.app');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
