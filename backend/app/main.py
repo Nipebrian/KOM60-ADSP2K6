@@ -27,7 +27,12 @@ Base.metadata.create_all(bind=engine)
 def _run_migrations():
     """Tambahkan kolom baru ke tabel yang sudah ada."""
     from app.core.database import SessionLocal
+    from app.core.config import DATABASE_URL
     import sqlalchemy
+    
+    if "sqlite" not in DATABASE_URL:
+        return
+        
     db = SessionLocal()
     new_columns = [
         ("umkm", "nomor_rekening", "VARCHAR(50)"),
@@ -62,8 +67,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Sajikan file upload (bukti pembayaran, foto profil)
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+# Sajikan file upload (bukti pembayaran, foto profil) — tidak tersedia di Vercel serverless
+import os as _os
+if _os.path.isdir(UPLOAD_DIR):
+    app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 # ── Audit Logging Middleware (Accounting/AAA) ──

@@ -21,7 +21,7 @@ import AuditLogPage          from './pages/AuditLogPage';
 class App extends Component {
   render() {
     return (
-      <Router basename="/KOM60-ADSP2K6">
+      <Router>
         <Routes>
           {/* ── Auth ── */}
           <Route path="/login"    element={<LoginPage />} />

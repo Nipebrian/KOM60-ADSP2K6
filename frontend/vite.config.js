@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/KOM60-ADSP2K6/',
+  base: '/',
   server: {
     proxy: {
       '/api': {

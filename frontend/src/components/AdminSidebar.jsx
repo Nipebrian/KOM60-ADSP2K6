@@ -15,7 +15,7 @@ class AdminSidebar extends Component {
   handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/KOM60-ADSP2K6/login';
+    window.location.href = '/login';
   };
 
   render() {
