@@ -19,11 +19,12 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor: handle 401 unauthorized
+// Interceptor: handle 401 unauthorized (skip redirect for login endpoint itself)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isLoginEndpoint = error.config?.url?.includes('/auth/login');
+    if (error.response?.status === 401 && !isLoginEndpoint) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
