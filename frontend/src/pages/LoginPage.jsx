@@ -30,7 +30,12 @@ class LoginPage extends Component {
       localStorage.setItem('user', JSON.stringify(res.data.user));
       this.setState({ redirect: true });
     } catch (err) {
-      this.setState({ error: err.response?.data?.detail || 'Email atau password salah.' });
+      const detail = err.response?.data?.detail;
+      this.setState({
+        error: typeof detail === 'string' && detail
+          ? detail
+          : 'Email atau password salah.',
+      });
     } finally {
       this.setState({ loading: false });
     }
