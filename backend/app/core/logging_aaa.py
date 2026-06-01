@@ -8,8 +8,9 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-LOG_DIR  = os.getenv("AAA_LOG_DIR", "./logs")
-Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
+# /tmp adalah satu-satunya writable path di Vercel serverless
+_default_log_dir = "/tmp/logs" if os.getenv("VERCEL") else "./logs"
+LOG_DIR  = os.getenv("AAA_LOG_DIR", _default_log_dir)
 LOG_FILE = os.path.join(LOG_DIR, "aaa_accounting.log")
 
 _aaa_logger = logging.getLogger("aaa.accounting")
@@ -17,9 +18,14 @@ _aaa_logger.setLevel(logging.INFO)
 _aaa_logger.propagate = False
 
 if not _aaa_logger.handlers:
-    _h = logging.FileHandler(LOG_FILE, encoding="utf-8")
-    _h.setFormatter(logging.Formatter("%(message)s"))
-    _aaa_logger.addHandler(_h)
+    try:
+        Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
+        _h = logging.FileHandler(LOG_FILE, encoding="utf-8")
+        _h.setFormatter(logging.Formatter("%(message)s"))
+        _aaa_logger.addHandler(_h)
+    except OSError:
+        # Filesystem read-only (e.g. Vercel cold start race) — fallback ke stderr
+        _aaa_logger.addHandler(logging.StreamHandler())
 
 
 def log_accounting(user_id: str, action: str, details: str = "", ip: str = "") -> None:
