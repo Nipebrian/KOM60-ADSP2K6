@@ -1,15 +1,13 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from app.core.config import DATABASE_URL
 
-_is_sqlite = "sqlite" in DATABASE_URL
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False} if _is_sqlite else {},
-    # Serverless-friendly: minimal pool, no pre-ping overhead at startup
     pool_pre_ping=True,
-    **({} if _is_sqlite else {"pool_size": 1, "max_overflow": 0, "pool_timeout": 20}),
+    pool_size=1,
+    max_overflow=0,
+    pool_timeout=20,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -17,7 +15,7 @@ Base = declarative_base()
 
 
 def get_db():
-    """Dependency yang menyediakan database session."""
+    """Dependency yang menyediakan database session per-request."""
     db = SessionLocal()
     try:
         yield db

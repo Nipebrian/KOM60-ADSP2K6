@@ -1,20 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import (
     get_password_hash, verify_password, create_access_token, get_current_user
 )
+from app.core.logging_aaa import log_login_attempt, log_accounting
 from app.models.user import User
 from app.schemas.user import UserRegister, TokenResponse, UserResponse, UserUpdate
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 
+def _ip(request: Request) -> str:
+    return request.headers.get("x-forwarded-for", "") or (
+        request.client.host if request.client else ""
+    )
+
+
 @router.post("/register", response_model=TokenResponse, status_code=201)
-def register(data: UserRegister, db: Session = Depends(get_db)):
+def register(data: UserRegister, request: Request, db: Session = Depends(get_db)):
     """Registrasi user baru (mahasiswa/umkm/admin)."""
-    # Cek email sudah terdaftar
     existing = db.query(User).filter(User.email == data.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email sudah terdaftar")
@@ -41,6 +47,9 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
+    log_accounting(user_id=user.user_id, action="USER_REGISTER",
+                   details=f"role={user.role}", ip=_ip(request))
+
     token = create_access_token(data={"sub": user.user_id, "role": user.role})
     return TokenResponse(
         access_token=token,
@@ -49,15 +58,24 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(request: Request,
+          form_data: OAuth2PasswordRequestForm = Depends(),
+          db: Session = Depends(get_db)):
     """Login dengan email (diisi di kolom username pada Swagger) dan password."""
-    # Swagger menggunakan field 'username', jadi kita mapping ke 'email' di database kita
+    ip   = _ip(request)
     user = db.query(User).filter(User.email == form_data.username).first()
+
     if not user or not verify_password(form_data.password, user.password):
+        log_login_attempt(email=form_data.username, success=False,
+                          ip=ip, reason="invalid_credentials")
         raise HTTPException(status_code=401, detail="Email atau password salah")
+
     if user.status != "aktif":
+        log_login_attempt(email=form_data.username, success=False,
+                          ip=ip, reason=f"account_status={user.status}")
         raise HTTPException(status_code=403, detail="Akun tidak aktif")
 
+    log_login_attempt(email=user.email, success=True, ip=ip)
     token = create_access_token(data={"sub": user.user_id, "role": user.role})
     return TokenResponse(
         access_token=token,
@@ -72,11 +90,14 @@ def get_me(current_user: User = Depends(get_current_user)):
 
 
 @router.put("/me", response_model=UserResponse)
-def update_me(data: UserUpdate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def update_me(data: UserUpdate, current_user: User = Depends(get_current_user),
+              db: Session = Depends(get_db)):
     """Update profil user yang sedang login."""
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(current_user, key, value)
     db.commit()
     db.refresh(current_user)
+    log_accounting(user_id=current_user.user_id, action="PROFILE_UPDATE",
+                   details=f"fields={list(update_data.keys())}")
     return UserResponse.model_validate(current_user)

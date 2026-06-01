@@ -7,6 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from app.core.database import get_db
+from app.core.logging_aaa import log_accounting
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
@@ -52,6 +53,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     if user.status != "aktif":
         raise HTTPException(status_code=403, detail="Akun tidak aktif")
+
+    log_accounting(user_id=user.user_id, action="ACCESS_GRANTED",
+                   details=f"role={user.role}")
     return user
 
 
@@ -59,6 +63,11 @@ def require_role(allowed_roles: list):
     """Dependency factory untuk membatasi akses berdasarkan role."""
     def role_checker(current_user=Depends(get_current_user)):
         if current_user.role not in allowed_roles:
+            log_accounting(
+                user_id=current_user.user_id,
+                action="ACCESS_DENIED",
+                details=f"required={allowed_roles}, actual_role={current_user.role}",
+            )
             raise HTTPException(status_code=403, detail="Akses ditolak")
         return current_user
     return role_checker

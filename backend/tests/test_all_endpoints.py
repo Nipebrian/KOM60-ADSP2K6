@@ -1,15 +1,21 @@
 """
 Automated API test script - menguji seluruh endpoint backend.
-Jalankan: python test_all_endpoints.py
+Jalankan dari folder backend/: python tests/test_all_endpoints.py
 """
 import requests
 import json
 import sys
+import time
 
 BASE = "http://127.0.0.1:8000"
 passed = 0
 failed = 0
 errors = []
+
+# Suffix unik per-run agar tidak tabrakan dengan data sebelumnya
+TS = str(int(time.time()))[-6:]
+TEST_MHS_EMAIL  = f"testmhs{TS}@test.com"
+TEST_UMKM_EMAIL = f"testumkm{TS}@test.com"
 
 
 def test(name, method, url, expected_status, **kwargs):
@@ -49,34 +55,39 @@ test("Root endpoint", "get", "/", 200)
 # === 2. AUTH ===
 print("\n--- Auth: Register ---")
 test("Register mahasiswa", "post", "/api/auth/register", 201, json={
-    "nama": "Test Mahasiswa", "email": "testmhs@test.com",
+    "nama": "Test Mahasiswa", "email": TEST_MHS_EMAIL,
     "password": "test1234", "role": "mahasiswa", "nim": "G64999",
     "fakultas": "FMIPA", "departemen": "Ilmu Komputer", "angkatan": "64"
 })
 test("Register UMKM user", "post", "/api/auth/register", 201, json={
-    "nama": "Test UMKM Owner", "email": "testumkm@test.com",
+    "nama": "Test UMKM Owner", "email": TEST_UMKM_EMAIL,
     "password": "test1234", "role": "umkm", "nik": "320123456"
 })
 test("Register duplicate email", "post", "/api/auth/register", 400, json={
-    "nama": "Dup", "email": "testmhs@test.com", "password": "test1234", "role": "mahasiswa"
+    "nama": "Dup", "email": TEST_MHS_EMAIL, "password": "test1234", "role": "mahasiswa"
 })
 
 print("\n--- Auth: Login ---")
 mhs_login = test("Login mahasiswa", "post", "/api/auth/login", 200,
-    data={"username": "testmhs@test.com", "password": "test1234"})
+    data={"username": TEST_MHS_EMAIL, "password": "test1234"})
 umkm_login = test("Login UMKM", "post", "/api/auth/login", 200,
-    data={"username": "testumkm@test.com", "password": "test1234"})
+    data={"username": TEST_UMKM_EMAIL, "password": "test1234"})
 admin_login = test("Login Admin", "post", "/api/auth/login", 200,
     data={"username": "admin@ipb.ac.id", "password": "admin123"})
+# Login seed mahasiswa lain (digunakan untuk uji akses terlarang)
+mirza_login = requests.post(f"{BASE}/api/auth/login",
+    data={"username": "mirza@apps.ipb.ac.id", "password": "mirza123"})
 test("Login wrong password", "post", "/api/auth/login", 401,
-    data={"username": "testmhs@test.com", "password": "wrongpass"})
+    data={"username": TEST_MHS_EMAIL, "password": "wrongpass"})
 
 MHS_TOKEN = mhs_login["access_token"] if mhs_login else ""
 UMKM_TOKEN = umkm_login["access_token"] if umkm_login else ""
 ADMIN_TOKEN = admin_login["access_token"] if admin_login else ""
+MIRZA_TOKEN = mirza_login.json().get("access_token", "") if mirza_login.status_code == 200 else ""
 mhs_headers = {"Authorization": f"Bearer {MHS_TOKEN}"}
 umkm_headers = {"Authorization": f"Bearer {UMKM_TOKEN}"}
 admin_headers = {"Authorization": f"Bearer {ADMIN_TOKEN}"}
+mirza_headers = {"Authorization": f"Bearer {MIRZA_TOKEN}"}
 
 print("\n--- Auth: Profile ---")
 test("Get me (mahasiswa)", "get", "/api/auth/me", 200, headers=mhs_headers)
@@ -142,8 +153,11 @@ test("Create pesanan - menu not found", "post", "/api/pesanan", 404, headers=mhs
 })
 test("Get my pesanan", "get", "/api/pesanan/saya", 200, headers=mhs_headers)
 test("Get pesanan detail", "get", f"/api/pesanan/{PESANAN_ID}", 200, headers=mhs_headers)
-test("Get pesanan forbidden (other user)", "get", f"/api/pesanan/{PESANAN_ID}", 403,
+# UMKM owner bisa akses pesanan mereka sendiri (200), mahasiswa lain tidak (403)
+test("Get pesanan detail (UMKM owner)", "get", f"/api/pesanan/{PESANAN_ID}", 200,
     headers=umkm_headers)
+test("Get pesanan forbidden (mahasiswa lain)", "get", f"/api/pesanan/{PESANAN_ID}", 403,
+    headers=mirza_headers)
 
 print("\n--- Pesanan: UMKM side ---")
 # Login as seed UMKM user to check pesanan masuk for their store
@@ -172,9 +186,10 @@ test("Create rating invalid nilai", "post", "/api/rating", 400, headers=mhs_head
 test("List ratings (public)", "get", f"/api/rating/umkm/{SEED_UMKM_ID}", 200)
 test("Rating summary", "get", f"/api/rating/umkm/{SEED_UMKM_ID}/summary", 200)
 
-# Balas rating - need seed UMKM owner token
+# Balas rating - UMKM list diurutkan by rating_rata_rata DESC
+# data[0] = Ayam Geprek Mbok Darmi (4.8) milik budi@apps.ipb.ac.id
 seed_umkm_owner_login = requests.post(f"{BASE}/api/auth/login",
-    data={"username": "hanif@apps.ipb.ac.id", "password": "hanif123"})
+    data={"username": "budi@apps.ipb.ac.id", "password": "budi1234"})
 if seed_umkm_owner_login.status_code == 200:
     seed_umkm_headers = {"Authorization": f"Bearer {seed_umkm_owner_login.json()['access_token']}"}
     test("Balas rating (UMKM owner)", "put", f"/api/rating/{RATING_ID}/balasan", 200,

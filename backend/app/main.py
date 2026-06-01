@@ -25,32 +25,6 @@ if not os.getenv("VERCEL"):
     Base.metadata.create_all(bind=engine)
 
 
-def _run_migrations():
-    """Tambahkan kolom baru ke tabel yang sudah ada."""
-    from app.core.database import SessionLocal
-    from app.core.config import DATABASE_URL
-    import sqlalchemy
-    
-    if "sqlite" not in DATABASE_URL:
-        return
-        
-    db = SessionLocal()
-    new_columns = [
-        ("umkm", "nomor_rekening", "VARCHAR(50)"),
-        ("umkm", "nama_bank",      "VARCHAR(100)"),
-        ("umkm", "nomor_ewallet",  "VARCHAR(50)"),
-        ("umkm", "foto_qris",      "VARCHAR(255)"),
-    ]
-    for table, col, col_type in new_columns:
-        try:
-            db.execute(sqlalchemy.text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
-            db.commit()
-        except Exception:
-            db.rollback()
-    db.close()
-
-_run_migrations()
-
 # Strip BOM (PowerShell pipe di Windows bisa sisipkan U+FEFF ke env var)
 _raw_origins = os.getenv("ALLOWED_ORIGINS", "").lstrip('﻿').strip()
 ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
