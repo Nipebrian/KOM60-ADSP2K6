@@ -4,7 +4,6 @@ import { pesananAPI } from '../services/api';
 import './KeranjangPage.css';
 
 const formatRp = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
-const PLATFORM_FEE = 2000;
 
 class KeranjangPage extends Component {
   constructor(props) {
@@ -207,7 +206,7 @@ class KeranjangPage extends Component {
 
                   <div className="kr-total-row">
                     <span>Total</span>
-                    <span className="kr-total-price">{formatRp(total + PLATFORM_FEE)}</span>
+                    <span className="kr-total-price">{formatRp(total)}</span>
                   </div>
 
                   <div className="kr-metode-label">Metode Pembayaran</div>

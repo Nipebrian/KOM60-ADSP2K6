@@ -1,19 +1,12 @@
 import React, { Component } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { pesananAPI } from '../services/api';
+import { pesananAPI, umkmAPI } from '../services/api';
 import { withRouter } from '../utils/withRouter';
 import './UploadBuktiPage.css';
 
 const formatRp = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
-
 const STEPS = ['Pesanan Dibuat', 'Upload Bukti', 'Validasi', 'Selesai'];
-
-const PAYMENT_INFO = {
-  BCA: { label: 'BCA', noRek: '1234567890', atas: 'IPB Food Hub' },
-  Mandiri: { label: 'Mandiri', noRek: '0987654321', atas: 'IPB Food Hub' },
-  GoPay: { label: 'GoPay', noRek: '0812-3456-7890', atas: 'a.n. UMKM Partner' },
-  QRIS: { label: 'QRIS', noRek: 'Scan QR di kasir UMKM', atas: '' },
-};
+const PAYMENT_DURATION_SEC = 5 * 60; // 5 menit
 
 class UploadBuktiPage extends Component {
   constructor(props) {
@@ -22,9 +15,10 @@ class UploadBuktiPage extends Component {
     this.state = {
       user,
       pesanan: null,
+      umkm: null,
       loading: true,
-      activeBank: 'GoPay',
-      metode: 'GoPay',
+      activeMethod: null,
+      metode: '',
       file: null,
       preview: null,
       dragging: false,
@@ -32,8 +26,11 @@ class UploadBuktiPage extends Component {
       error: '',
       success: false,
       copied: false,
+      timeLeft: null,
+      expired: false,
     };
     this.inputRef = React.createRef();
+    this.timerInterval = null;
   }
 
   componentDidMount() {
@@ -42,13 +39,95 @@ class UploadBuktiPage extends Component {
     if (pesananId) this.fetchPesanan(pesananId);
   }
 
+  componentWillUnmount() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+  }
+
   fetchPesanan = async (id) => {
     try {
       const res = await pesananAPI.getById(id);
-      this.setState({ pesanan: res.data, loading: false });
+      const pesanan = res.data;
+      this.setState({ pesanan, loading: false });
+
+      if (pesanan.umkm_id) {
+        try {
+          const umkmRes = await umkmAPI.getById(pesanan.umkm_id);
+          const umkm = umkmRes.data;
+          this.setState({ umkm });
+          const methods = this.buildMethods(umkm);
+          if (methods.length > 0) {
+            this.setState({ activeMethod: methods[0].key, metode: methods[0].key });
+          }
+        } catch { /* silently ignore */ }
+      }
+
+      if (pesanan.status_pesanan === 'menunggu_pembayaran' && pesanan.tanggal_pesan) {
+        this.startCountdown(pesanan.tanggal_pesan);
+      }
     } catch {
       this.setState({ loading: false });
     }
+  };
+
+  buildMethods = (umkm) => {
+    if (!umkm) return [];
+    const methods = [];
+    if (umkm.nama_bank && umkm.nomor_rekening) {
+      methods.push({
+        key: 'bank',
+        label: umkm.nama_bank,
+        noRek: umkm.nomor_rekening,
+        atas: umkm.nama_umkm,
+      });
+    }
+    if (umkm.nomor_ewallet) {
+      methods.push({
+        key: 'ewallet',
+        label: 'E-Wallet',
+        noRek: umkm.nomor_ewallet,
+        atas: umkm.nama_umkm,
+      });
+    }
+    if (umkm.foto_qris) {
+      methods.push({
+        key: 'qris',
+        label: 'QRIS',
+        qrisImage: umkm.foto_qris,
+      });
+    }
+    return methods;
+  };
+
+  startCountdown = (tanggalPesan) => {
+    const deadline = new Date(tanggalPesan).getTime() + PAYMENT_DURATION_SEC * 1000;
+    const tick = () => {
+      const remaining = Math.floor((deadline - Date.now()) / 1000);
+      if (remaining <= 0) {
+        clearInterval(this.timerInterval);
+        this.setState({ timeLeft: 0 });
+        this.handleExpired();
+      } else {
+        this.setState({ timeLeft: remaining });
+      }
+    };
+    tick();
+    this.timerInterval = setInterval(tick, 1000);
+  };
+
+  handleExpired = async () => {
+    const { pesanan } = this.state;
+    if (!pesanan) return;
+    this.setState({ expired: true });
+    try {
+      await pesananAPI.batalPesanan(pesanan.pesanan_id);
+    } catch { /* ignore */ }
+  };
+
+  formatCountdown = (seconds) => {
+    if (seconds == null) return '--:--';
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
   handleFileChange = (file) => {
@@ -65,8 +144,12 @@ class UploadBuktiPage extends Component {
   };
 
   handleSubmit = async () => {
-    const { file, metode } = this.state;
+    const { file, metode, expired } = this.state;
     const { pesananId } = this.props.params;
+    if (expired) {
+      this.setState({ error: 'Waktu pembayaran telah habis. Pesanan telah dibatalkan.' });
+      return;
+    }
     if (!file) {
       this.setState({ error: 'Mohon pilih file bukti pembayaran.' });
       return;
@@ -97,12 +180,18 @@ class UploadBuktiPage extends Component {
   };
 
   render() {
-    const { user, pesanan, loading, activeBank, metode, file, preview, dragging, uploading, error, success, copied } = this.state;
+    const {
+      pesanan, umkm, loading, activeMethod, metode,
+      file, preview, dragging, uploading, error, success,
+      copied, timeLeft, expired,
+    } = this.state;
     const user2 = JSON.parse(localStorage.getItem('user') || 'null');
     if (!user2) return <Navigate to="/login" replace />;
     if (success) return <Navigate to="/pesanan" replace />;
 
-    const bankInfo = PAYMENT_INFO[activeBank];
+    const methods = this.buildMethods(umkm);
+    const activeMethodData = methods.find(m => m.key === activeMethod) || null;
+    const timerDanger = timeLeft !== null && timeLeft <= 60;
 
     return (
       <div className="ub-page">
@@ -143,10 +232,25 @@ class UploadBuktiPage extends Component {
           <div className="ub-loading">
             <div className="ub-spinner" /> Memuat data pesanan...
           </div>
+        ) : expired ? (
+          <div className="ub-expired-card">
+            <div className="ub-expired-icon">⏰</div>
+            <h2 className="ub-expired-title">Waktu Pembayaran Habis</h2>
+            <p className="ub-expired-desc">
+              Pesanan Anda telah dibatalkan karena melewati batas waktu pembayaran 5 menit.
+            </p>
+            <Link to="/pesanan" className="ub-submit-btn ub-expired-btn">
+              Lihat Riwayat Pesanan
+            </Link>
+          </div>
         ) : (
           <main className="ub-main">
             {/* ═══ LEFT: Payment Info ═══ */}
             <div className="ub-left-card">
+              <button className="ub-back-btn" onClick={() => this.props.navigate(-1)}>
+                ← Kembali
+              </button>
+
               <h2 className="ub-card-title">Transfer Pembayaran</h2>
               <p className="ub-card-sub">Selesaikan pembayaran sesuai instruksi di bawah ini.</p>
 
@@ -159,48 +263,77 @@ class UploadBuktiPage extends Component {
                       {copied ? '✓' : '📋'}
                     </button>
                   </div>
-                  <div className="ub-timer">⏱ Bayar dalam 23:59:00</div>
+                  {timeLeft !== null && (
+                    <div className={`ub-timer ${timerDanger ? 'danger' : ''}`}>
+                      ⏱ Bayar dalam {this.formatCountdown(timeLeft)}
+                    </div>
+                  )}
                 </>
               )}
 
-              {/* Bank tabs */}
-              <div className="ub-bank-tabs">
-                {Object.keys(PAYMENT_INFO).map(bank => (
-                  <button
-                    key={bank}
-                    className={`ub-bank-tab ${activeBank === bank ? 'active' : ''}`}
-                    onClick={() => this.setState({ activeBank: bank, metode: bank })}
-                  >
-                    {bank}
-                  </button>
-                ))}
-              </div>
+              {/* Payment method tabs */}
+              {methods.length > 0 ? (
+                <>
+                  <div className="ub-bank-tabs">
+                    {methods.map(m => (
+                      <button
+                        key={m.key}
+                        className={`ub-bank-tab ${activeMethod === m.key ? 'active' : ''}`}
+                        onClick={() => this.setState({ activeMethod: m.key, metode: m.key })}
+                      >
+                        {m.label}
+                      </button>
+                    ))}
+                  </div>
 
-              <div className="ub-bank-detail">
-                <div className="ub-bank-row">
-                  <div>
-                    <div className="ub-bank-field-label">
-                      {activeBank === 'QRIS' ? 'Cara Pembayaran' : `Nomor ${bankInfo.label}`}
+                  {activeMethodData && (
+                    <div className="ub-bank-detail">
+                      {activeMethodData.key === 'qris' ? (
+                        <div className="ub-qris-wrap">
+                          {activeMethodData.qrisImage ? (
+                            <img
+                              src={activeMethodData.qrisImage}
+                              alt="QR Code UMKM"
+                              className="ub-qris-img"
+                            />
+                          ) : (
+                            <div className="ub-qris-placeholder">📱 QR Code tidak tersedia</div>
+                          )}
+                          <div className="ub-bank-field-label" style={{ marginTop: 10, textAlign: 'center' }}>
+                            Scan QR Code di atas untuk membayar
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="ub-bank-row">
+                            <div>
+                              <div className="ub-bank-field-label">
+                                {activeMethodData.key === 'ewallet' ? 'Nomor E-Wallet' : `Nomor ${activeMethodData.label}`}
+                              </div>
+                              <div className="ub-bank-field-val">{activeMethodData.noRek}</div>
+                            </div>
+                            <button className="ub-salin-btn" onClick={() => this.copyToClipboard(activeMethodData.noRek)}>
+                              📋 Salin
+                            </button>
+                          </div>
+                          {activeMethodData.atas && (
+                            <div className="ub-bank-row" style={{ marginTop: 12 }}>
+                              <div>
+                                <div className="ub-bank-field-label">Atas Nama</div>
+                                <div className="ub-bank-field-val">{activeMethodData.atas}</div>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
-                    <div className="ub-bank-field-val">{bankInfo.noRek}</div>
-                  </div>
-                  {activeBank !== 'QRIS' && (
-                    <button className="ub-salin-btn" onClick={() => this.copyToClipboard(bankInfo.noRek)}>
-                      📋 Salin
-                    </button>
                   )}
+                </>
+              ) : (
+                <div className="ub-no-methods">
+                  Metode pembayaran belum dikonfigurasi oleh UMKM ini. Hubungi UMKM secara langsung.
                 </div>
-                {bankInfo.atas && (
-                  <div className="ub-bank-row" style={{ marginTop: 12 }}>
-                    <div>
-                      <div className="ub-bank-field-label">Atas Nama</div>
-                      <div className="ub-bank-field-val">
-                        {pesanan?.nama_umkm ? `a.n. ${pesanan.nama_umkm}` : bankInfo.atas}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* Items list */}
               {pesanan?.detail_list && (
@@ -220,21 +353,23 @@ class UploadBuktiPage extends Component {
             <div className="ub-right-card">
               <h2 className="ub-card-title">Upload Bukti Transfer</h2>
 
-              <div className="ub-field-group">
-                <label className="ub-label">Metode Pembayaran</label>
-                <div className="ub-select-wrap">
-                  <select
-                    value={metode}
-                    onChange={e => this.setState({ metode: e.target.value, activeBank: e.target.value })}
-                    className="ub-select"
-                  >
-                    {Object.keys(PAYMENT_INFO).map(k => (
-                      <option key={k} value={k}>{k}</option>
-                    ))}
-                  </select>
-                  <span className="ub-select-arrow">▾</span>
+              {methods.length > 0 && (
+                <div className="ub-field-group">
+                  <label className="ub-label">Metode Pembayaran</label>
+                  <div className="ub-select-wrap">
+                    <select
+                      value={metode}
+                      onChange={e => this.setState({ metode: e.target.value, activeMethod: e.target.value })}
+                      className="ub-select"
+                    >
+                      {methods.map(m => (
+                        <option key={m.key} value={m.key}>{m.label}</option>
+                      ))}
+                    </select>
+                    <span className="ub-select-arrow">▾</span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Drop zone */}
               <div
@@ -271,7 +406,7 @@ class UploadBuktiPage extends Component {
               <button
                 className="ub-submit-btn"
                 onClick={this.handleSubmit}
-                disabled={uploading}
+                disabled={uploading || expired}
               >
                 {uploading ? 'Mengirim...' : 'Kirim Bukti Pembayaran ➤'}
               </button>

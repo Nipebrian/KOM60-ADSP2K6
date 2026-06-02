@@ -19,8 +19,6 @@ from app.schemas.pesanan import (
 router = APIRouter(prefix="/api/pesanan", tags=["Pesanan"])
 
 
-PLATFORM_FEE = 2000.0
-
 ALLOWED_UPLOAD_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5MB
 
@@ -113,12 +111,12 @@ def create_pesanan(
         )
         pesanan.detail_list.append(detail)
 
-    pesanan.total_harga = total + PLATFORM_FEE
+    pesanan.total_harga = total
 
     # Buat record pembayaran (kosong, akan diisi saat upload bukti)
     pembayaran = Pembayaran(
         pesanan_id=pesanan.pesanan_id,
-        jumlah_bayar=total + PLATFORM_FEE,
+        jumlah_bayar=total,
         status_pembayaran="belum_bayar",
     )
     pesanan.pembayaran = pembayaran
@@ -231,6 +229,37 @@ async def upload_bukti_pembayaran(
 
     # Update status pesanan
     pesanan.status_pesanan = "menunggu_validasi"
+
+    db.commit()
+    db.refresh(pesanan)
+    return _build_pesanan_response(pesanan)
+
+
+@router.put("/{pesanan_id}/batal", response_model=PesananResponse)
+def batal_pesanan(
+    pesanan_id: str,
+    current_user: User = Depends(require_role(["mahasiswa"])),
+    db: Session = Depends(get_db),
+):
+    """Batalkan pesanan yang belum dibayar karena timeout (mahasiswa pemilik)."""
+    pesanan = db.query(Pesanan).options(
+        joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
+        joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
+        joinedload(Pesanan.umkm),
+        joinedload(Pesanan.mahasiswa),
+    ).filter(
+        Pesanan.pesanan_id == pesanan_id,
+        Pesanan.mahasiswa_id == current_user.user_id,
+    ).first()
+
+    if not pesanan:
+        raise HTTPException(status_code=404, detail="Pesanan tidak ditemukan")
+    if pesanan.status_pesanan != "menunggu_pembayaran":
+        raise HTTPException(status_code=400, detail="Pesanan tidak dapat dibatalkan pada status ini")
+
+    pesanan.status_pesanan = "ditolak"
+    if pesanan.pembayaran:
+        pesanan.pembayaran.status_pembayaran = "ditolak"
 
     db.commit()
     db.refresh(pesanan)

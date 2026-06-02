@@ -32,7 +32,6 @@ class PesananCreate(BaseModel):
     items: list[DetailPesananCreate]
     catatan_pesanan: Optional[str] = None
     waktu_pengambilan: Optional[datetime] = None
-    platform_fee: float = 2000.0
 
 
 class PesananResponse(BaseModel):

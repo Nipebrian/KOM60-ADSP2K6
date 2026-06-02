@@ -79,6 +79,7 @@ export const pesananAPI = {
   getMasuk: (params) => api.get('/api/pesanan/umkm/masuk', { params }),
   updateStatus: (id, data) => api.put(`/api/pesanan/${id}/status`, data),
   verifikasiBukti: (id, data) => api.put(`/api/pesanan/${id}/verifikasi-bukti`, data),
+  batalPesanan: (id) => api.put(`/api/pesanan/${id}/batal`),
 };
 
 export const ratingAPI = {
