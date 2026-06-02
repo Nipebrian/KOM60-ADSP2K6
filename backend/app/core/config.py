@@ -28,8 +28,12 @@ ENCRYPTION_KEY = _env("ENCRYPTION_KEY", "")
 RSA_PRIVATE_KEY_PATH = _env("RSA_PRIVATE_KEY_PATH", "./keys/private.pem")
 RSA_PUBLIC_KEY_PATH  = _env("RSA_PUBLIC_KEY_PATH",  "./keys/public.pem")
 
-UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
+# /tmp adalah satu-satunya writable path di Vercel serverless
+if os.environ.get('VERCEL'):
+    UPLOAD_DIR = '/tmp'
+else:
+    UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
 try:
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 except OSError:
-    pass  # Read-only filesystem (e.g., Vercel serverless)
+    pass
