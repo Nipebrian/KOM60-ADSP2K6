@@ -99,7 +99,10 @@ class UploadBuktiPage extends Component {
   };
 
   startCountdown = (tanggalPesan) => {
-    const deadline = new Date(tanggalPesan).getTime() + PAYMENT_DURATION_SEC * 1000;
+    // Backend menyimpan waktu UTC tanpa suffix 'Z'; tanpa 'Z', browser mengartikannya
+    // sebagai waktu lokal (WIB/UTC+7) sehingga deadline sudah lewat sebelum timer mulai.
+    const utcTs = /Z|[+-]\d{2}:\d{2}$/.test(tanggalPesan) ? tanggalPesan : tanggalPesan + 'Z';
+    const deadline = new Date(utcTs).getTime() + PAYMENT_DURATION_SEC * 1000;
     const tick = () => {
       const remaining = Math.floor((deadline - Date.now()) / 1000);
       if (remaining <= 0) {
