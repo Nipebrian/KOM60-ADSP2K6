@@ -1,27 +1,27 @@
-import React, { Component } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-import LoginPage          from './pages/LoginPage';
-import RegisterPage       from './pages/RegisterPage';
-import HomePage           from './pages/HomePage';
-import DirektoriPage      from './pages/DirektoriPage';
-import DetailUMKMPage     from './pages/DetailUMKMPage';
-import KeranjangPage      from './pages/KeranjangPage';
-import UploadBuktiPage    from './pages/UploadBuktiPage';
-import PesananPage        from './pages/PesananPage';
-import DashboardUMKMPage  from './pages/DashboardUMKMPage';
-import KelolaMenuPage     from './pages/KelolaMenuPage';
-import PesananMasukPage   from './pages/PesananMasukPage';
-import KelolaPromoPage    from './pages/KelolaPromoPage';
-import DashboardAdminPage    from './pages/DashboardAdminPage';
-import KelolaAkunPage        from './pages/KelolaAkunPage';
-import SecurityDashboardPage from './pages/SecurityDashboardPage';
-import AuditLogPage          from './pages/AuditLogPage';
+const LoginPage          = lazy(() => import('./pages/LoginPage'));
+const RegisterPage       = lazy(() => import('./pages/RegisterPage'));
+const HomePage           = lazy(() => import('./pages/HomePage'));
+const DirektoriPage      = lazy(() => import('./pages/DirektoriPage'));
+const DetailUMKMPage     = lazy(() => import('./pages/DetailUMKMPage'));
+const KeranjangPage      = lazy(() => import('./pages/KeranjangPage'));
+const UploadBuktiPage    = lazy(() => import('./pages/UploadBuktiPage'));
+const PesananPage        = lazy(() => import('./pages/PesananPage'));
+const DashboardUMKMPage  = lazy(() => import('./pages/DashboardUMKMPage'));
+const KelolaMenuPage     = lazy(() => import('./pages/KelolaMenuPage'));
+const PesananMasukPage   = lazy(() => import('./pages/PesananMasukPage'));
+const KelolaPromoPage    = lazy(() => import('./pages/KelolaPromoPage'));
+const DashboardAdminPage    = lazy(() => import('./pages/DashboardAdminPage'));
+const KelolaAkunPage        = lazy(() => import('./pages/KelolaAkunPage'));
+const SecurityDashboardPage = lazy(() => import('./pages/SecurityDashboardPage'));
+const AuditLogPage          = lazy(() => import('./pages/AuditLogPage'));
 
-class App extends Component {
-  render() {
-    return (
-      <Router>
+function App() {
+  return (
+    <Router>
+      <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '1rem', color: '#888' }}>Memuat...</div>}>
         <Routes>
           {/* ── Auth ── */}
           <Route path="/login"    element={<LoginPage />} />
@@ -50,9 +50,9 @@ class App extends Component {
           {/* ── Fallback ── */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Router>
-    );
-  }
+      </Suspense>
+    </Router>
+  );
 }
 
 export default App;

@@ -1,3 +1,4 @@
+import asyncio
 import os
 import time
 from fastapi import FastAPI, Request
@@ -57,19 +58,39 @@ if _os.path.isdir(UPLOAD_DIR):
     app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
+def _write_audit_log(user_id, method, endpoint, status_code, ip, user_agent, duration_ms):
+    """Tulis audit log ke DB — dijalankan di background agar tidak blokir response."""
+    db = SessionLocal()
+    try:
+        log = AuditLog(
+            user_id=user_id,
+            method=method,
+            endpoint=endpoint,
+            status_code=status_code,
+            ip_address=ip,
+            user_agent=user_agent[:255],
+            duration_ms=duration_ms,
+        )
+        db.add(log)
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
+
+
 # ── Audit Logging Middleware (Accounting/AAA) ──
 @app.middleware("http")
 async def audit_logging_middleware(request: Request, call_next):
+    # Lewati endpoint non-API sebelum memproses agar tidak ada overhead
+    if not request.url.path.startswith("/api/"):
+        return await call_next(request)
+
     start = time.time()
     response = await call_next(request)
-
-    # Hanya log endpoint /api/
-    if not request.url.path.startswith("/api/"):
-        return response
-
     duration_ms = int((time.time() - start) * 1000)
 
-    # Ekstrak user_id dari JWT jika ada
+    # Ekstrak user_id dari JWT jika ada (tanpa await — pure CPU)
     user_id = None
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
@@ -80,23 +101,19 @@ async def audit_logging_middleware(request: Request, call_next):
         except JWTError:
             pass
 
-    db = SessionLocal()
-    try:
-        log = AuditLog(
-            user_id=user_id,
-            method=request.method,
-            endpoint=request.url.path,
-            status_code=response.status_code,
-            ip_address=request.client.host if request.client else "unknown",
-            user_agent=request.headers.get("user-agent", "")[:255],
-            duration_ms=duration_ms,
-        )
-        db.add(log)
-        db.commit()
-    except Exception:
-        db.rollback()
-    finally:
-        db.close()
+    # DB write dijalankan di background — response sudah dikirim ke client
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(
+        None,
+        _write_audit_log,
+        user_id,
+        request.method,
+        request.url.path,
+        response.status_code,
+        request.client.host if request.client else "unknown",
+        request.headers.get("user-agent", ""),
+        duration_ms,
+    )
 
     return response
 
