@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { umkmAPI } from '../services/api';
+import { umkmAPI, getImageUrl } from '../services/api';
 import './DirektoriPage.css';
 
 const KATEGORI_OPTIONS = [
@@ -354,7 +354,7 @@ class DirektoriPage extends Component {
                     {/* Image */}
                     <div className="dir-card-img">
                       {u.foto_toko
-                        ? <img src={u.foto_toko} alt={u.nama_umkm} />
+                        ? <img src={getImageUrl(u.foto_toko)} alt={u.nama_umkm} />
                         : (FOOD_ICONS[u.kategori] || FOOD_ICONS.default)
                       }
                       {u.rating_rata_rata > 0 && (

@@ -49,11 +49,17 @@ class DashboardUMKMPage extends Component {
   componentDidMount() {
     if (!this.state.user || this.state.user.role !== 'umkm') return;
     this.fetchAll().then(() => {
-      // Auto-buka modal profil jika dinavigasi dari link Pengaturan
-      if (this.props.location?.state?.openProfile) {
-        this.openProfileModal();
-      }
+      if (this.props.location?.state?.openProfile) this.openProfileModal();
     });
+  }
+
+  componentDidUpdate(prevProps) {
+    // Buka modal saat user klik "Pengaturan" dari halaman yang sudah mount
+    const wasOpen = prevProps.location?.state?.openProfile;
+    const isOpen  = this.props.location?.state?.openProfile;
+    if (isOpen && !wasOpen && !this.state.showProfileModal) {
+      this.openProfileModal();
+    }
   }
 
   fetchAll = async () => {
