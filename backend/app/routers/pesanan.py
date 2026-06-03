@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query, Form
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime, timezone
-import uuid
-import os
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
-from app.core.config import UPLOAD_DIR
+from app.core.cloudinary_helper import upload_image
 from app.models.user import User
 from app.models.umkm import UMKM
 from app.models.menu import Menu
@@ -18,10 +16,6 @@ from app.schemas.pesanan import (
 )
 
 router = APIRouter(prefix="/api/pesanan", tags=["Pesanan"])
-
-
-ALLOWED_UPLOAD_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
-MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5MB
 
 
 def _build_pesanan_response(pesanan: Pesanan) -> PesananResponse:
@@ -122,7 +116,10 @@ def create_pesanan(
             Promo.umkm_id == data.umkm_id,
             Promo.status_aktif == True,
         ).first()
-        if promo and promo.tanggal_mulai <= datetime.now(tz.utc) <= promo.tanggal_berakhir:
+        now = datetime.utcnow()
+        t_mulai = promo.tanggal_mulai.replace(tzinfo=None) if promo and promo.tanggal_mulai else None
+        t_akhir = promo.tanggal_berakhir.replace(tzinfo=None) if promo and promo.tanggal_berakhir else None
+        if promo and t_mulai and t_akhir and t_mulai <= now <= t_akhir:
             diskon = round(total * promo.diskon_persen / 100, 0)
             total = max(0.0, total - diskon)
             pesanan.total_harga = total
@@ -214,19 +211,7 @@ async def upload_bukti_pembayaran(
     if pesanan.status_pesanan != "menunggu_pembayaran":
         raise HTTPException(status_code=400, detail="Pesanan tidak dalam status menunggu pembayaran")
 
-    # Validasi file upload
-    ext = os.path.splitext(file.filename or '')[1].lower()
-    if ext not in ALLOWED_UPLOAD_EXTENSIONS:
-        raise HTTPException(status_code=400, detail="Format file tidak didukung. Gunakan JPG, PNG, GIF, atau WEBP.")
-    contents = await file.read()
-    if len(contents) > MAX_UPLOAD_SIZE:
-        raise HTTPException(status_code=400, detail="Ukuran file terlalu besar. Maksimal 5MB.")
-
-    # Simpan file
-    filename = f"{uuid.uuid4()}{ext}"
-    filepath = os.path.join(UPLOAD_DIR, filename)
-    with open(filepath, "wb") as f:
-        f.write(contents)
+    foto_url = await upload_image(file, folder="ipb-food-hub/bukti")
 
     # Update pembayaran
     pembayaran = pesanan.pembayaran
@@ -237,7 +222,7 @@ async def upload_bukti_pembayaran(
     # Simpan bukti
     bukti = BuktiPembayaran(
         pembayaran_id=pembayaran.pembayaran_id,
-        foto_url=f"/uploads/{filename}",
+        foto_url=foto_url,
     )
     pembayaran.bukti = bukti
 
