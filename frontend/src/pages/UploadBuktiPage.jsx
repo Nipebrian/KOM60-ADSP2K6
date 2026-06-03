@@ -28,6 +28,7 @@ class UploadBuktiPage extends Component {
       copied: false,
       timeLeft: null,
       expired: false,
+      cancelledByStatus: false,
     };
     this.inputRef = React.createRef();
     this.timerInterval = null;
@@ -48,6 +49,18 @@ class UploadBuktiPage extends Component {
       const res = await pesananAPI.getById(id);
       const pesanan = res.data;
       this.setState({ pesanan, loading: false });
+
+      // Pesanan sudah dibatalkan/ditolak → tampilkan layar expired
+      if (['ditolak', 'batal'].includes(pesanan.status_pesanan)) {
+        this.setState({ expired: true, cancelledByStatus: true });
+        return;
+      }
+
+      // Bukti sudah diupload → redirect ke daftar pesanan
+      if (['menunggu_validasi', 'diproses', 'siap_diambil', 'selesai'].includes(pesanan.status_pesanan)) {
+        this.setState({ success: true });
+        return;
+      }
 
       if (pesanan.umkm_id) {
         try {
@@ -186,7 +199,7 @@ class UploadBuktiPage extends Component {
     const {
       pesanan, umkm, loading, activeMethod, metode,
       file, preview, dragging, uploading, error, success,
-      copied, timeLeft, expired,
+      copied, timeLeft, expired, cancelledByStatus,
     } = this.state;
     const user2 = JSON.parse(localStorage.getItem('user') || 'null');
     if (!user2) return <Navigate to="/login" replace />;
@@ -238,12 +251,19 @@ class UploadBuktiPage extends Component {
         ) : expired ? (
           <div className="ub-expired-card">
             <div className="ub-expired-icon">⏰</div>
-            <h2 className="ub-expired-title">Waktu Pembayaran Habis</h2>
+            <h2 className="ub-expired-title">
+              {cancelledByStatus ? 'Pesanan Telah Dibatalkan' : 'Waktu Pembayaran Habis'}
+            </h2>
             <p className="ub-expired-desc">
-              Pesanan Anda telah dibatalkan karena melewati batas waktu pembayaran 5 menit.
+              {cancelledByStatus
+                ? 'Pesanan ini sudah dibatalkan dan tidak dapat menerima bukti pembayaran. Silakan buat pesanan baru.'
+                : 'Pesanan Anda telah dibatalkan karena melewati batas waktu pembayaran 5 menit.'}
             </p>
-            <Link to="/pesanan" className="ub-submit-btn ub-expired-btn">
-              Lihat Riwayat Pesanan
+            <Link to="/direktori" className="ub-submit-btn ub-expired-btn" style={{ marginRight: 8 }}>
+              Pesan Lagi
+            </Link>
+            <Link to="/pesanan" className="ub-submit-btn ub-expired-btn" style={{ background: '#6b7280' }}>
+              Lihat Riwayat
             </Link>
           </div>
         ) : (
