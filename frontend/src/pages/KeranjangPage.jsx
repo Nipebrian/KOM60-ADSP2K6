@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { pesananAPI, promoAPI } from '../services/api';
+import { pesananAPI, promoAPI, getImageUrl } from '../services/api';
 import './KeranjangPage.css';
 
 const formatRp = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
@@ -173,7 +173,7 @@ class KeranjangPage extends Component {
                     <div key={item.menu_id} className="kr-item">
                       <div className="kr-item-img">
                         {item.foto_menu
-                          ? <img src={item.foto_menu} alt={item.nama_menu} />
+                          ? <img src={getImageUrl(item.foto_menu)} alt={item.nama_menu} />
                           : <span>🍽️</span>}
                       </div>
                       <div className="kr-item-body">

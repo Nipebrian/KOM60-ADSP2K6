@@ -12,7 +12,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL ||
 export const getImageUrl = (path) => {
   if (!path) return null;
   if (/^(blob:|data:|https?:)/.test(path)) return path;
-  const base = import.meta.env.VITE_API_URL || 'https://ipb-food-hub-api.vercel.app';
+  const base = import.meta.env.VITE_API_URL ||
+    (import.meta.env.DEV ? '' : 'https://ipb-food-hub-api.vercel.app');
   return `${base}${path}`;
 };
 

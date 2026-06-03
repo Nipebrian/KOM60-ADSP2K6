@@ -28,6 +28,12 @@ ENCRYPTION_KEY = _env("ENCRYPTION_KEY", "")
 RSA_PRIVATE_KEY_PATH = _env("RSA_PRIVATE_KEY_PATH", "./keys/private.pem")
 RSA_PUBLIC_KEY_PATH  = _env("RSA_PUBLIC_KEY_PATH",  "./keys/public.pem")
 
+# Cloudinary (storage permanen untuk production)
+CLOUDINARY_CLOUD_NAME = _env("CLOUDINARY_CLOUD_NAME", "")
+CLOUDINARY_API_KEY    = _env("CLOUDINARY_API_KEY", "")
+CLOUDINARY_API_SECRET = _env("CLOUDINARY_API_SECRET", "")
+USE_CLOUDINARY = bool(CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+
 # /tmp adalah satu-satunya writable path di Vercel serverless
 if os.environ.get('VERCEL'):
     UPLOAD_DIR = '/tmp'

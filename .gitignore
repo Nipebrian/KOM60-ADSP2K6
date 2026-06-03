@@ -11,7 +11,7 @@ backend/uploads/*
 # Keamanan — kunci RSA dan log AAA
 backend/keys/
 *.pem
-# backend/logs/  ← boleh di-commit sebagai bukti untuk dosen
+# backend/logs/
 
 # Node / Frontend
 frontend/node_modules/

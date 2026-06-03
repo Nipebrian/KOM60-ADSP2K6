@@ -1,16 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
-import uuid, os
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
-from app.core.config import UPLOAD_DIR
+from app.core.cloudinary_helper import upload_image
 from app.models.user import User
 from app.models.umkm import UMKM
 from app.models.menu import Menu
 from app.schemas.menu import MenuCreate, MenuUpdate, MenuResponse
-
-ALLOWED_IMG_EXT = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
-MAX_IMG_SIZE = 5 * 1024 * 1024  # 5MB
 
 router = APIRouter(prefix="/api/umkm/{umkm_id}/menu", tags=["Menu"])
 
@@ -135,18 +131,7 @@ async def upload_foto_menu(
     if not menu:
         raise HTTPException(status_code=404, detail="Menu tidak ditemukan")
 
-    ext = os.path.splitext(file.filename or '')[1].lower()
-    if ext not in ALLOWED_IMG_EXT:
-        raise HTTPException(status_code=400, detail="Format file tidak didukung. Gunakan JPG, PNG, GIF, atau WEBP.")
-    contents = await file.read()
-    if len(contents) > MAX_IMG_SIZE:
-        raise HTTPException(status_code=400, detail="Ukuran file terlalu besar. Maksimal 5MB.")
-
-    filename = f"{uuid.uuid4()}{ext}"
-    with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
-        f.write(contents)
-
-    menu.foto_menu = f"/uploads/{filename}"
+    menu.foto_menu = await upload_image(file, folder="ipb-food-hub/menu")
     db.commit()
     db.refresh(menu)
     return MenuResponse.model_validate(menu)

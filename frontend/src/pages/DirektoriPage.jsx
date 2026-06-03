@@ -354,7 +354,18 @@ class DirektoriPage extends Component {
                     {/* Image */}
                     <div className="dir-card-img">
                       {u.foto_toko
-                        ? <img src={getImageUrl(u.foto_toko)} alt={u.nama_umkm} />
+                        ? <img
+                            src={getImageUrl(u.foto_toko)}
+                            alt={u.nama_umkm}
+                            onError={e => {
+                              const img = e.currentTarget;
+                              img.parentNode.insertBefore(
+                                document.createTextNode(FOOD_ICONS[u.kategori] || FOOD_ICONS.default),
+                                img
+                              );
+                              img.remove();
+                            }}
+                          />
                         : (FOOD_ICONS[u.kategori] || FOOD_ICONS.default)
                       }
                       {u.rating_rata_rata > 0 && (

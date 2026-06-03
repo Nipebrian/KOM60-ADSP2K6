@@ -191,7 +191,18 @@ class DetailUMKMPage extends Component {
                   {/* Thumb */}
                   <div className="det-menu-thumb">
                     {menu.foto_menu
-                      ? <img src={getImageUrl(menu.foto_menu)} alt={menu.nama_menu} />
+                      ? <img
+                          src={getImageUrl(menu.foto_menu)}
+                          alt={menu.nama_menu}
+                          onError={e => {
+                            const img = e.currentTarget;
+                            img.parentNode.insertBefore(
+                              document.createTextNode(FOOD_ICONS[menu.kategori] || FOOD_ICONS.default),
+                              img
+                            );
+                            img.remove();
+                          }}
+                        />
                       : (FOOD_ICONS[menu.kategori] || FOOD_ICONS.default)
                     }
                   </div>
@@ -378,7 +389,11 @@ class DetailUMKMPage extends Component {
         {/* ── BANNER ── */}
         <div className="det-banner">
           {umkm.foto_toko
-            ? <img src={getImageUrl(umkm.foto_toko)} alt={umkm.nama_umkm} />
+            ? <img
+                src={getImageUrl(umkm.foto_toko)}
+                alt={umkm.nama_umkm}
+                onError={e => { e.currentTarget.style.display = 'none'; }}
+              />
             : (FOOD_ICONS[umkm.kategori] || FOOD_ICONS.default)
           }
         </div>

@@ -1,30 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-import uuid, os
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
-from app.core.config import UPLOAD_DIR
+from app.core.cloudinary_helper import upload_image
 from app.models.user import User
 from app.models.umkm import UMKM
 from app.schemas.umkm import UMKMCreate, UMKMUpdate, UMKMResponse, UMKMListResponse
-
-ALLOWED_IMG_EXT = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
-MAX_IMG_SIZE = 5 * 1024 * 1024  # 5MB
-
-
-async def _save_upload(file: UploadFile) -> str:
-    """Validasi dan simpan file upload, kembalikan URL path."""
-    ext = os.path.splitext(file.filename or '')[1].lower()
-    if ext not in ALLOWED_IMG_EXT:
-        raise HTTPException(status_code=400, detail="Format file tidak didukung. Gunakan JPG, PNG, GIF, atau WEBP.")
-    contents = await file.read()
-    if len(contents) > MAX_IMG_SIZE:
-        raise HTTPException(status_code=400, detail="Ukuran file terlalu besar. Maksimal 5MB.")
-    filename = f"{uuid.uuid4()}{ext}"
-    with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
-        f.write(contents)
-    return f"/uploads/{filename}"
 
 router = APIRouter(prefix="/api/umkm", tags=["UMKM"])
 
@@ -168,7 +150,7 @@ async def upload_foto_umkm(
     if current_user.role == "umkm" and umkm.pemilik_id != current_user.user_id:
         raise HTTPException(status_code=403, detail="Bukan pemilik UMKM ini")
 
-    umkm.foto_toko = await _save_upload(file)
+    umkm.foto_toko = await upload_image(file, folder="ipb-food-hub/toko")
     db.commit()
     db.refresh(umkm)
     return UMKMResponse.model_validate(umkm)
@@ -188,7 +170,7 @@ async def upload_qris_umkm(
     if current_user.role == "umkm" and umkm.pemilik_id != current_user.user_id:
         raise HTTPException(status_code=403, detail="Bukan pemilik UMKM ini")
 
-    umkm.foto_qris = await _save_upload(file)
+    umkm.foto_qris = await upload_image(file, folder="ipb-food-hub/qris")
     db.commit()
     db.refresh(umkm)
     return UMKMResponse.model_validate(umkm)
