@@ -57,8 +57,6 @@ def _build_pesanan_response(pesanan: Pesanan) -> PesananResponse:
         nama_umkm=pesanan.umkm.nama_umkm if pesanan.umkm else None,
         tanggal_pesan=pesanan.tanggal_pesan,
         total_harga=pesanan.total_harga,
-        diskon_persen=pesanan.diskon_persen,
-        diskon_amount=pesanan.diskon_amount,
         status_pesanan=pesanan.status_pesanan,
         catatan_pesanan=pesanan.catatan_pesanan,
         waktu_pengambilan=pesanan.waktu_pengambilan,
@@ -116,7 +114,7 @@ def create_pesanan(
 
     pesanan.total_harga = total
 
-    # Terapkan promo jika ada
+    # Terapkan promo: kurangi total_harga langsung (tidak perlu kolom baru di DB)
     if data.promo_id:
         from datetime import datetime, timezone as tz
         promo = db.query(Promo).filter(
@@ -126,8 +124,6 @@ def create_pesanan(
         ).first()
         if promo and promo.tanggal_mulai <= datetime.now(tz.utc) <= promo.tanggal_berakhir:
             diskon = round(total * promo.diskon_persen / 100, 0)
-            pesanan.diskon_persen = promo.diskon_persen
-            pesanan.diskon_amount = diskon
             total = max(0.0, total - diskon)
             pesanan.total_harga = total
 

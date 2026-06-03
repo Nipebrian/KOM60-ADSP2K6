@@ -14,8 +14,6 @@ class Pesanan(Base):
     umkm_id = Column(String, ForeignKey("umkm.umkm_id"), nullable=False)
     tanggal_pesan = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     total_harga = Column(Float, default=0.0)
-    diskon_persen = Column(Float, nullable=True)
-    diskon_amount = Column(Float, nullable=True)
     status_pesanan = Column(String(30), default="menunggu_pembayaran")
     # Status: menunggu_pembayaran, menunggu_validasi, diproses, siap_diambil, selesai, ditolak
     catatan_pesanan = Column(Text, nullable=True)
