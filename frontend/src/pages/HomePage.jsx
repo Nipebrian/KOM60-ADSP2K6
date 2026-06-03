@@ -97,6 +97,8 @@ class HomePage extends Component {
     const { user, promos, umkms, loadingPromo, loadingUmkm, redirectLogin, searchQuery } = this.state;
 
     if (redirectLogin || !user) return <Navigate to="/login" replace />;
+    if (user.role === 'umkm') return <Navigate to="/dashboard/umkm" replace />;
+    if (user.role === 'admin') return <Navigate to="/dashboard/admin" replace />;
 
     return (
       <div>

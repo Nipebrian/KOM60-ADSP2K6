@@ -111,6 +111,7 @@ class KeranjangPage extends Component {
   render() {
     const { user, cart, catatan, waktu, loading, error, redirect, promos, selectedPromo } = this.state;
     if (!user) return <Navigate to="/login" replace />;
+    if (user.role !== 'mahasiswa') return <Navigate to={user.role === 'umkm' ? '/dashboard/umkm' : '/dashboard/admin'} replace />;
     if (redirect) return <Navigate to={redirect} replace />;
 
     const subtotal = this.getSubtotal();

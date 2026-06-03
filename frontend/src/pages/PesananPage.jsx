@@ -118,6 +118,7 @@ class PesananPage extends Component {
   render() {
     const { user, activeTab, loading, ratingModal, ratingNilai, ratingKomentar, ratingLoading, ratingError, ratingDone } = this.state;
     if (!user) return <Navigate to="/login" replace />;
+    if (user.role !== 'mahasiswa') return <Navigate to={user.role === 'umkm' ? '/dashboard/umkm' : '/dashboard/admin'} replace />;
 
     const filtered = this.getFiltered();
     const aktifCount = this.state.pesananList.filter(p => AKTIF_STATUS.includes(p.status_pesanan)).length;

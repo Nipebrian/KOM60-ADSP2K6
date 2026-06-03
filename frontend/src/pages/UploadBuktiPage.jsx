@@ -203,6 +203,7 @@ class UploadBuktiPage extends Component {
     } = this.state;
     const user2 = JSON.parse(localStorage.getItem('user') || 'null');
     if (!user2) return <Navigate to="/login" replace />;
+    if (user2.role !== 'mahasiswa') return <Navigate to={user2.role === 'umkm' ? '/dashboard/umkm' : '/dashboard/admin'} replace />;
     if (success) return <Navigate to="/pesanan" replace />;
 
     const methods = this.buildMethods(umkm);

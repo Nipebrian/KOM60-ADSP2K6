@@ -339,6 +339,8 @@ class DetailUMKMPage extends Component {
     const { user, umkm, loading, activeTab, ratingSummary } = this.state;
 
     if (!user) return <Navigate to="/login" replace />;
+    if (user.role === 'umkm') return <Navigate to="/dashboard/umkm" replace />;
+    if (user.role === 'admin') return <Navigate to="/dashboard/admin" replace />;
 
     const cartCount = this.getCartCount();
     const cartTotal = this.getCartTotal();
