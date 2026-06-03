@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
-import { umkmAPI, menuAPI } from '../services/api';
+import { umkmAPI, menuAPI, getImageUrl } from '../services/api';
 import UMKMSidebar from '../components/UMKMSidebar';
 import './DashboardUMKM.css';
 
@@ -122,10 +122,24 @@ class KelolaMenuPage extends Component {
 
   handleToggle = async (m) => {
     const { toko } = this.state;
+    const newStatus = !m.status_ketersediaan;
+    // Optimistic update — langsung tampilkan perubahan tanpa tunggu API
+    this.setState(prev => ({
+      menus: prev.menus.map(menu =>
+        menu.menu_id === m.menu_id ? { ...menu, status_ketersediaan: newStatus } : menu
+      ),
+    }));
     try {
-      await menuAPI.update(toko.umkm_id, m.menu_id, { status_ketersediaan: !m.status_ketersediaan });
-      await this.fetchMenus(toko.umkm_id);
-    } catch { alert('Gagal update status.'); }
+      await menuAPI.update(toko.umkm_id, m.menu_id, { status_ketersediaan: newStatus });
+    } catch {
+      // Revert jika API gagal
+      this.setState(prev => ({
+        menus: prev.menus.map(menu =>
+          menu.menu_id === m.menu_id ? { ...menu, status_ketersediaan: m.status_ketersediaan } : menu
+        ),
+      }));
+      alert('Gagal update status.');
+    }
   };
 
   render() {
@@ -213,7 +227,7 @@ class KelolaMenuPage extends Component {
                             <td>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                 <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, overflow: 'hidden' }}>
-                                  {m.foto_menu ? <img src={m.foto_menu} alt={m.nama_menu} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🍽️'}
+                                  {m.foto_menu ? <img src={getImageUrl(m.foto_menu)} alt={m.nama_menu} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🍽️'}
                                 </div>
                                 <span style={{ fontWeight: 600 }}>{m.nama_menu}</span>
                               </div>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { umkmAPI, menuAPI, ratingAPI, promoAPI } from '../services/api';
+import { umkmAPI, menuAPI, ratingAPI, promoAPI, getImageUrl } from '../services/api';
 import { withRouter } from '../utils/withRouter';
 import './DetailUMKMPage.css';
 
@@ -191,7 +191,7 @@ class DetailUMKMPage extends Component {
                   {/* Thumb */}
                   <div className="det-menu-thumb">
                     {menu.foto_menu
-                      ? <img src={menu.foto_menu} alt={menu.nama_menu} />
+                      ? <img src={getImageUrl(menu.foto_menu)} alt={menu.nama_menu} />
                       : (FOOD_ICONS[menu.kategori] || FOOD_ICONS.default)
                     }
                   </div>
@@ -378,7 +378,7 @@ class DetailUMKMPage extends Component {
         {/* ── BANNER ── */}
         <div className="det-banner">
           {umkm.foto_toko
-            ? <img src={umkm.foto_toko} alt={umkm.nama_umkm} />
+            ? <img src={getImageUrl(umkm.foto_toko)} alt={umkm.nama_umkm} />
             : (FOOD_ICONS[umkm.kategori] || FOOD_ICONS.default)
           }
         </div>

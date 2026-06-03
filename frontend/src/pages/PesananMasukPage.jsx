@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
-import { pesananAPI } from '../services/api';
+import { pesananAPI, getImageUrl } from '../services/api';
 import UMKMSidebar from '../components/UMKMSidebar';
 import './DashboardUMKM.css';
 
@@ -33,6 +33,7 @@ class PesananMasukPage extends Component {
       tolakModal: null,
       catatanTolak: '',
       actionLoading: null,
+      buktiModal: null,
     };
   }
 
@@ -106,7 +107,7 @@ class PesananMasukPage extends Component {
   };
 
   render() {
-    const { user, activeTab, loading, search, tolakModal, catatanTolak, actionLoading } = this.state;
+    const { user, activeTab, loading, search, tolakModal, catatanTolak, actionLoading, buktiModal } = this.state;
     if (!user) return <Navigate to="/login" replace />;
     if (user.role !== 'umkm') return <Navigate to="/" replace />;
 
@@ -197,10 +198,11 @@ class PesananMasukPage extends Component {
                           </div>
 
                           {p.pembayaran?.bukti?.foto_url && (
-                            <a href={p.pembayaran.bukti.foto_url} target="_blank" rel="noopener noreferrer"
-                               style={{ fontSize: 13, color: '#006B3F', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <button
+                              onClick={() => this.setState({ buktiModal: getImageUrl(p.pembayaran.bukti.foto_url) })}
+                              style={{ fontSize: 13, color: '#006B3F', fontWeight: 600, background: 'none', border: '1.5px solid #006B3F', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                               🖼 Lihat Bukti
-                            </a>
+                            </button>
                           )}
 
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
@@ -235,6 +237,22 @@ class PesananMasukPage extends Component {
             )}
           </div>
         </div>
+
+        {/* ── BUKTI MODAL ── */}
+        {buktiModal && (
+          <div className="du-modal-overlay" onClick={() => this.setState({ buktiModal: null })} style={{ zIndex: 1000 }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, padding: 20, maxWidth: '90vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <div style={{ fontWeight: 700, fontSize: 16 }}>Bukti Pembayaran</div>
+                <button onClick={() => this.setState({ buktiModal: null })} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#6b7280' }}>✕</button>
+              </div>
+              <img src={buktiModal} alt="Bukti Pembayaran" style={{ maxWidth: '80vw', maxHeight: '70vh', objectFit: 'contain', borderRadius: 8 }} />
+              <a href={buktiModal} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: '#006B3F', fontWeight: 600 }}>
+                Buka di tab baru ↗
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* ── TOLAK MODAL ── */}
         {tolakModal && (

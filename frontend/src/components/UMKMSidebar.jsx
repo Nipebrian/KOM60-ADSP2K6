@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { icon: '🍽', label: 'Kelola Menu',  path: '/dashboard/umkm/menu' },
   { icon: '📋', label: 'Pesanan Masuk', path: '/dashboard/umkm/pesanan' },
   { icon: '🏷', label: 'Kelola Promo', path: '/dashboard/umkm/promo' },
-  { icon: '⚙', label: 'Pengaturan',   path: '/dashboard/umkm/settings' },
+  { icon: '⚙', label: 'Pengaturan',   path: '/dashboard/umkm', settingsLink: true },
 ];
 
 class UMKMSidebar extends Component {
@@ -32,16 +32,20 @@ class UMKMSidebar extends Component {
         </div>
 
         <nav className="du-sidebar-nav">
-          {NAV_ITEMS.map(item => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`du-nav-item ${activePath === item.path ? 'active' : ''}`}
-            >
-              <span className="du-nav-icon">{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
+          {NAV_ITEMS.map(item => {
+            const isActive = item.settingsLink ? false : activePath === item.path;
+            return (
+              <Link
+                key={item.label}
+                to={item.path}
+                state={item.settingsLink ? { openProfile: true } : undefined}
+                className={`du-nav-item ${isActive ? 'active' : ''}`}
+              >
+                <span className="du-nav-icon">{item.icon}</span>
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="du-sidebar-bottom">

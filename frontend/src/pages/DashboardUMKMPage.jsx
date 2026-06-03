@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { pesananAPI, ratingAPI, umkmAPI, menuAPI } from '../services/api';
+import { pesananAPI, ratingAPI, umkmAPI, menuAPI, getImageUrl } from '../services/api';
+import { withRouter } from '../utils/withRouter';
 import UMKMSidebar from '../components/UMKMSidebar';
 import './DashboardUMKM.css';
 
@@ -41,12 +42,18 @@ class DashboardUMKMPage extends Component {
       fotoTokoFile: null, fotoTokoPreview: null,
       fotoQrisFile: null, fotoQrisPreview: null,
       profileLoading: false, profileError: '',
+      replyingTo: null, replyText: '', replyLoading: false,
     };
   }
 
   componentDidMount() {
     if (!this.state.user || this.state.user.role !== 'umkm') return;
-    this.fetchAll();
+    this.fetchAll().then(() => {
+      // Auto-buka modal profil jika dinavigasi dari link Pengaturan
+      if (this.props.location?.state?.openProfile) {
+        this.openProfileModal();
+      }
+    });
   }
 
   fetchAll = async () => {
@@ -84,9 +91,9 @@ class DashboardUMKMPage extends Component {
       showProfileModal: true,
       profileError: '',
       fotoTokoFile: null,
-      fotoTokoPreview: toko?.foto_toko || null,
+      fotoTokoPreview: getImageUrl(toko?.foto_toko) || null,
       fotoQrisFile: null,
-      fotoQrisPreview: toko?.foto_qris || null,
+      fotoQrisPreview: getImageUrl(toko?.foto_qris) || null,
       profileForm: {
         nama_umkm: toko?.nama_umkm || '',
         alamat: toko?.alamat || '',
@@ -103,6 +110,22 @@ class DashboardUMKMPage extends Component {
   };
 
   closeProfileModal = () => this.setState({ showProfileModal: false, profileError: '' });
+
+  handleBalasUlasan = async (ratingId) => {
+    const { replyText } = this.state;
+    if (!replyText.trim()) return;
+    this.setState({ replyLoading: true });
+    try {
+      const res = await ratingAPI.balas(ratingId, { balasan: replyText });
+      this.setState(prev => ({
+        ulasanList: prev.ulasanList.map(u =>
+          u.rating_id === ratingId ? { ...u, balasan: res.data.balasan } : u
+        ),
+        replyingTo: null, replyText: '',
+      }));
+    } catch { alert('Gagal mengirim balasan.'); }
+    finally { this.setState({ replyLoading: false }); }
+  };
 
   handleFotoToko = (e) => {
     const file = e.target.files[0];
@@ -162,6 +185,7 @@ class DashboardUMKMPage extends Component {
       user, toko, pesananList, ulasanList, menus, loading,
       showProfileModal, profileForm, profileLoading, profileError,
       fotoTokoPreview, fotoQrisPreview,
+      replyingTo, replyText, replyLoading,
     } = this.state;
 
     if (!user) return <Navigate to="/login" replace />;
@@ -316,6 +340,34 @@ class DashboardUMKMPage extends Component {
                             <div className="du-review-stars">{'★'.repeat(u.nilai)}{'☆'.repeat(5 - u.nilai)}</div>
                           </div>
                           <div className="du-review-text">{u.komentar || '-'}</div>
+                          {u.balasan ? (
+                            <div style={{ marginTop: 8, padding: '8px 12px', background: '#f0fdf4', borderLeft: '3px solid #006B3F', borderRadius: 6, fontSize: 13, color: '#374151' }}>
+                              <strong style={{ color: '#006B3F' }}>Balasan Anda:</strong> {u.balasan}
+                            </div>
+                          ) : replyingTo === u.rating_id ? (
+                            <div style={{ marginTop: 8 }}>
+                              <textarea
+                                value={replyText}
+                                onChange={e => this.setState({ replyText: e.target.value })}
+                                placeholder="Tulis balasan..."
+                                rows={2}
+                                style={{ width: '100%', borderRadius: 8, border: '1.5px solid #d1d5db', padding: '8px 10px', fontSize: 13, resize: 'vertical', boxSizing: 'border-box' }}
+                              />
+                              <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                                <button className="du-btn primary sm" onClick={() => this.handleBalasUlasan(u.rating_id)} disabled={replyLoading}>
+                                  {replyLoading ? '...' : 'Kirim'}
+                                </button>
+                                <button className="du-btn outline sm" onClick={() => this.setState({ replyingTo: null, replyText: '' })}>Batal</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => this.setState({ replyingTo: u.rating_id, replyText: '' })}
+                              style={{ marginTop: 6, fontSize: 12, color: '#006B3F', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                            >
+                              💬 Balas ulasan
+                            </button>
+                          )}
                         </div>
                       ))
                     )}
@@ -447,4 +499,4 @@ class DashboardUMKMPage extends Component {
   }
 }
 
-export default DashboardUMKMPage;
+export default withRouter(DashboardUMKMPage);

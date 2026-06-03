@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { pesananAPI, umkmAPI } from '../services/api';
+import { pesananAPI, umkmAPI, getImageUrl } from '../services/api';
 import { withRouter } from '../utils/withRouter';
 import './UploadBuktiPage.css';
 
@@ -259,11 +259,8 @@ class UploadBuktiPage extends Component {
                 ? 'Pesanan ini sudah dibatalkan dan tidak dapat menerima bukti pembayaran. Silakan buat pesanan baru.'
                 : 'Pesanan Anda telah dibatalkan karena melewati batas waktu pembayaran 5 menit.'}
             </p>
-            <Link to="/direktori" className="ub-submit-btn ub-expired-btn" style={{ marginRight: 8 }}>
+            <Link to="/direktori" className="ub-submit-btn ub-expired-btn">
               Pesan Lagi
-            </Link>
-            <Link to="/pesanan" className="ub-submit-btn ub-expired-btn" style={{ background: '#6b7280' }}>
-              Lihat Riwayat
             </Link>
           </div>
         ) : (
@@ -315,7 +312,7 @@ class UploadBuktiPage extends Component {
                         <div className="ub-qris-wrap">
                           {activeMethodData.qrisImage ? (
                             <img
-                              src={activeMethodData.qrisImage}
+                              src={getImageUrl(activeMethodData.qrisImage)}
                               alt="QR Code UMKM"
                               className="ub-qris-img"
                             />

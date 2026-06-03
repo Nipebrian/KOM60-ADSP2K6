@@ -5,6 +5,17 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_URL ||
   (import.meta.env.DEV ? '' : 'https://ipb-food-hub-api.vercel.app');
 
+/**
+ * Konversi path relatif dari backend (/uploads/...) ke URL absolut backend.
+ * Blob/data URL dan URL yang sudah absolut dikembalikan apa adanya.
+ */
+export const getImageUrl = (path) => {
+  if (!path) return null;
+  if (/^(blob:|data:|https?:)/.test(path)) return path;
+  const base = import.meta.env.VITE_API_URL || 'https://ipb-food-hub-api.vercel.app';
+  return `${base}${path}`;
+};
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },

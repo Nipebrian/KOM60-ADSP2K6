@@ -32,6 +32,7 @@ class PesananCreate(BaseModel):
     items: list[DetailPesananCreate]
     catatan_pesanan: Optional[str] = None
     waktu_pengambilan: Optional[datetime] = None
+    promo_id: Optional[str] = None
 
 
 class PesananResponse(BaseModel):
@@ -43,6 +44,8 @@ class PesananResponse(BaseModel):
     nama_umkm: Optional[str] = None
     tanggal_pesan: Optional[datetime] = None
     total_harga: float
+    diskon_persen: Optional[float] = None
+    diskon_amount: Optional[float] = None
     status_pesanan: str
     catatan_pesanan: Optional[str] = None
     waktu_pengambilan: Optional[datetime] = None

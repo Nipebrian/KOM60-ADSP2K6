@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { pesananAPI } from '../services/api';
+import { pesananAPI, promoAPI } from '../services/api';
 import './KeranjangPage.css';
 
 const formatRp = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
@@ -18,8 +18,34 @@ class KeranjangPage extends Component {
       loading: false,
       error: '',
       redirect: null,
+      promos: [],
+      selectedPromo: null,
     };
   }
+
+  componentDidMount() {
+    this.fetchPromos();
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.cart !== this.state.cart) this.fetchPromos();
+  }
+
+  fetchPromos = async () => {
+    const umkmId = this.getUmkmId();
+    if (!umkmId) { this.setState({ promos: [], selectedPromo: null }); return; }
+    try {
+      const res = await promoAPI.listByUmkm(umkmId);
+      const now = new Date();
+      const aktif = (res.data || []).filter(p =>
+        p.status_aktif && new Date(p.tanggal_mulai) <= now && new Date(p.tanggal_berakhir) >= now
+      );
+      this.setState(prev => ({
+        promos: aktif,
+        selectedPromo: aktif.find(p => p.promo_id === prev.selectedPromo?.promo_id) || null,
+      }));
+    } catch { this.setState({ promos: [] }); }
+  };
 
   getUmkmId() {
     const { cart } = this.state;
@@ -28,8 +54,14 @@ class KeranjangPage extends Component {
     return cart.every(i => i.umkm_id === first) ? first : null;
   }
 
-  getTotal = () =>
-    this.state.cart.reduce((s, i) => s + i.harga * i.jumlah, 0);
+  getSubtotal = () => this.state.cart.reduce((s, i) => s + i.harga * i.jumlah, 0);
+
+  getTotal = () => {
+    const sub = this.getSubtotal();
+    const { selectedPromo } = this.state;
+    if (!selectedPromo) return sub;
+    return Math.max(0, sub - Math.round(sub * selectedPromo.diskon_persen / 100));
+  };
 
   updateJumlah = (menuId, delta) => {
     const cart = this.state.cart
@@ -65,6 +97,7 @@ class KeranjangPage extends Component {
         items: cart.map(i => ({ menu_id: i.menu_id, jumlah: i.jumlah })),
         catatan_pesanan: catatan,
         waktu_pengambilan: waktu,
+        promo_id: this.state.selectedPromo?.promo_id || null,
       });
       localStorage.removeItem('cart');
       this.setState({ redirect: `/pesanan/${res.data.pesanan_id}/bayar` });
@@ -76,11 +109,13 @@ class KeranjangPage extends Component {
   };
 
   render() {
-    const { user, cart, catatan, waktu, loading, error, redirect } = this.state;
+    const { user, cart, catatan, waktu, loading, error, redirect, promos, selectedPromo } = this.state;
     if (!user) return <Navigate to="/login" replace />;
     if (redirect) return <Navigate to={redirect} replace />;
 
+    const subtotal = this.getSubtotal();
     const total = this.getTotal();
+    const diskon = subtotal - total;
     const umkmId = this.getUmkmId();
     const namaUmkm = cart.length > 0 ? cart[0].nama_umkm : '';
     const multiUmkm = cart.length > 0 && !umkmId;
@@ -203,6 +238,41 @@ class KeranjangPage extends Component {
                   </div>
 
                   <div className="kr-divider" />
+
+                  {/* Promo / Voucher */}
+                  {promos.length > 0 && (
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>🏷️ Gunakan Promo</div>
+                      <select
+                        value={selectedPromo?.promo_id || ''}
+                        onChange={e => {
+                          const p = promos.find(x => x.promo_id === e.target.value) || null;
+                          this.setState({ selectedPromo: p });
+                        }}
+                        style={{ width: '100%', border: '1.5px solid #d1d5db', borderRadius: 8, padding: '8px 10px', fontSize: 13, background: '#fff' }}
+                      >
+                        <option value="">-- Pilih promo --</option>
+                        {promos.map(p => (
+                          <option key={p.promo_id} value={p.promo_id}>
+                            {p.judul} ({p.diskon_persen}% off)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {diskon > 0 && (
+                    <>
+                      <div className="kr-summary-row" style={{ marginBottom: 4 }}>
+                        <span className="kr-sum-label">Subtotal</span>
+                        <span className="kr-sum-val">{formatRp(subtotal)}</span>
+                      </div>
+                      <div className="kr-summary-row" style={{ color: '#16a34a', marginBottom: 8 }}>
+                        <span className="kr-sum-label">Diskon {selectedPromo?.diskon_persen}%</span>
+                        <span className="kr-sum-val">−{formatRp(diskon)}</span>
+                      </div>
+                    </>
+                  )}
 
                   <div className="kr-total-row">
                     <span>Total</span>
