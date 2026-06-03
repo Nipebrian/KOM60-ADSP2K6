@@ -31,7 +31,6 @@ class DirektoriPage extends Component {
     super(props);
     const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-    // Read URL params on init
     const params = new URLSearchParams(window.location.search);
     const initKat = params.get('kategori') || '';
     const initSearch = params.get('search') || '';
@@ -79,14 +78,12 @@ class DirektoriPage extends Component {
       const res = await umkmAPI.list(params);
       let data = res.data.data || [];
 
-      // Client-side sort
       if (sortBy === 'terpopuler') {
         data = data.sort((a, b) => (b.rating_rata_rata || 0) - (a.rating_rata_rata || 0));
       } else if (sortBy === 'az') {
         data = data.sort((a, b) => a.nama_umkm.localeCompare(b.nama_umkm));
       }
 
-      // Filter rating client-side
       const { appliedRating } = this.state;
       if (appliedRating > 0) {
         data = data.filter(u => (u.rating_rata_rata || 0) >= appliedRating);
@@ -203,7 +200,6 @@ class DirektoriPage extends Component {
 
     return (
       <div>
-        {/* ── NAVBAR ── */}
         <nav className="dir-navbar">
           <Link to="/" className="dir-nav-logo">🍽️ IPB Food Hub</Link>
 
@@ -224,15 +220,11 @@ class DirektoriPage extends Component {
           </div>
         </nav>
 
-        {/* ── PAGE LAYOUT ── */}
         <div className="dir-page">
-
-          {/* SIDEBAR FILTER */}
           <aside className="dir-sidebar">
             <div className="dir-sidebar-card">
               <div className="dir-sidebar-title">⚙ Filters</div>
 
-              {/* Kategori */}
               <div className="dir-filter-group">
                 <div className="dir-filter-label">Kategori</div>
                 {KATEGORI_OPTIONS.map((k) => (
@@ -250,7 +242,6 @@ class DirektoriPage extends Component {
 
               <div className="dir-divider" />
 
-              {/* Status */}
               <div className="dir-filter-group">
                 <div className="dir-filter-label">Status</div>
                 {[
@@ -274,7 +265,6 @@ class DirektoriPage extends Component {
 
               <div className="dir-divider" />
 
-              {/* Rating */}
               <div className="dir-filter-group">
                 <div className="dir-filter-label">Rating</div>
                 {[4, 3, 2, 1].map((r) => (
@@ -296,9 +286,7 @@ class DirektoriPage extends Component {
             </div>
           </aside>
 
-          {/* MAIN CONTENT */}
           <div className="dir-content">
-            {/* Breadcrumb */}
             <div className="dir-breadcrumb">
               <Link to="/">Home</Link>
               <span className="sep">›</span>
@@ -307,14 +295,12 @@ class DirektoriPage extends Component {
 
             <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16 }}>Direktori UMKM</h1>
 
-            {/* Topbar */}
             <div className="dir-topbar">
               <span className="dir-count">
                 {loading ? 'Memuat...' : `Menampilkan ${total} UMKM`}
               </span>
 
               <div className="dir-topbar-right">
-                {/* Search */}
                 <form onSubmit={this.handleSearchSubmit}>
                   <div className="dir-search-bar">
                     <span className="si">🔍</span>
@@ -327,7 +313,6 @@ class DirektoriPage extends Component {
                   </div>
                 </form>
 
-                {/* Sort */}
                 <div className="dir-sort">
                   <span>Sort by:</span>
                   <select value={sortBy} onChange={this.handleSortChange}>
@@ -339,7 +324,6 @@ class DirektoriPage extends Component {
               </div>
             </div>
 
-            {/* Grid */}
             <div className="dir-grid">
               {loading ? (
                 <div className="dir-loading">
@@ -353,7 +337,6 @@ class DirektoriPage extends Component {
               ) : (
                 umkms.map((u) => (
                   <Link key={u.umkm_id} to={`/umkm/${u.umkm_id}`} className="dir-card">
-                    {/* Image */}
                     <div className="dir-card-img">
                       {u.foto_toko
                         ? <img
@@ -378,7 +361,6 @@ class DirektoriPage extends Component {
                       )}
                     </div>
 
-                    {/* Body */}
                     <div className="dir-card-body">
                       <div className="dir-card-header">
                         <div className="dir-card-name">{u.nama_umkm}</div>
@@ -411,7 +393,6 @@ class DirektoriPage extends Component {
               )}
             </div>
 
-            {/* Pagination */}
             {!loading && this.renderPagination()}
           </div>
         </div>

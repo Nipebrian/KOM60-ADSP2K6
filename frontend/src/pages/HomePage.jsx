@@ -102,7 +102,6 @@ class HomePage extends Component {
 
     return (
       <div>
-        {/* ── NAVBAR ── */}
         <nav className="hp-navbar">
           <div className="hp-nav-logo">
             <span className="logo-icon">🍽️</span>
@@ -139,10 +138,7 @@ class HomePage extends Component {
           </div>
         </nav>
 
-        {/* ── MAIN ── */}
         <main className="hp-main">
-
-          {/* HERO */}
           <section className="hp-hero">
             <span className="hp-hero-deco">🍔</span>
             <div className="hp-hero-content">
@@ -154,7 +150,6 @@ class HomePage extends Component {
             </div>
           </section>
 
-          {/* PROMO */}
           <section className="hp-section">
             <div className="hp-section-header">
               <h2 className="hp-section-title">
@@ -188,7 +183,6 @@ class HomePage extends Component {
             )}
           </section>
 
-          {/* KATEGORI */}
           <section className="hp-section">
             <div className="hp-section-header">
               <h2 className="hp-section-title">Kategori</h2>
@@ -207,7 +201,6 @@ class HomePage extends Component {
             </div>
           </section>
 
-          {/* UMKM POPULER */}
           <section className="hp-section">
             <div className="hp-section-header">
               <h2 className="hp-section-title">
@@ -267,7 +260,6 @@ class HomePage extends Component {
           </section>
         </main>
 
-        {/* FOOTER */}
         <footer className="hp-footer">
           <div className="hp-footer-inner">
             <div className="hp-footer-brand">

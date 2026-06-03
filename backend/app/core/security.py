@@ -17,11 +17,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    # bcrypt membutuhkan bytes
     pwd_bytes = password.encode('utf-8')
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(pwd_bytes, salt)
-    # Kembalikan sebagai string agar bisa disimpan di database
     return hashed_password.decode('utf-8')
 
 
@@ -33,7 +31,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    """Dependency untuk mendapatkan user yang sedang login dari JWT token."""
     from app.models.user import User
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -60,7 +57,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 
 def require_role(allowed_roles: list):
-    """Dependency factory untuk membatasi akses berdasarkan role."""
     def role_checker(current_user=Depends(get_current_user)):
         if current_user.role not in allowed_roles:
             log_accounting(

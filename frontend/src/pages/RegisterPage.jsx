@@ -101,7 +101,6 @@ class RegisterPage extends Component {
 
     return (
       <div className="auth-wrapper register-mode">
-        {/* ── LEFT PANEL ── */}
         <div className="auth-left">
           <div className="auth-left-logo">
             <span className="logo-icon">🍽️</span>
@@ -116,13 +115,11 @@ class RegisterPage extends Component {
           </div>
         </div>
 
-        {/* ── RIGHT PANEL ── */}
         <div className="auth-right">
           <div className="auth-card">
             <h1>Buat Akun Baru</h1>
             <p className="auth-subtitle" style={{ marginBottom: 20 }}>Pilih tipe akun Anda</p>
 
-            {/* Role Toggle */}
             <div className="role-toggle">
               <button
                 type="button"
@@ -145,7 +142,6 @@ class RegisterPage extends Component {
             {error && <div className="auth-error">{error}</div>}
 
             <form onSubmit={this.handleSubmit}>
-              {/* Nama */}
               <div className="form-group">
                 <label>Nama Lengkap</label>
                 <div className="input-wrap">
@@ -158,7 +154,6 @@ class RegisterPage extends Component {
                 </div>
               </div>
 
-              {/* Email */}
               <div className="form-group">
                 <label>Email</label>
                 <div className="input-wrap">
@@ -171,7 +166,6 @@ class RegisterPage extends Component {
                 </div>
               </div>
 
-              {/* No. Telp */}
               <div className="form-group">
                 <label>No. Telepon</label>
                 <div className="input-wrap">
@@ -184,7 +178,6 @@ class RegisterPage extends Component {
                 </div>
               </div>
 
-              {/* Mahasiswa fields */}
               {role === 'mahasiswa' && (
                 <>
                   <div className="form-group">
@@ -216,7 +209,6 @@ class RegisterPage extends Component {
                 </>
               )}
 
-              {/* Password */}
               <div className="form-group">
                 <label>Password</label>
                 <div className="input-wrap">
@@ -246,7 +238,6 @@ class RegisterPage extends Component {
                 )}
               </div>
 
-              {/* Confirm Password */}
               <div className="form-group">
                 <label>Konfirmasi Password</label>
                 <div className="input-wrap">

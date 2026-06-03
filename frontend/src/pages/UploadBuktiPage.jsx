@@ -50,13 +50,11 @@ class UploadBuktiPage extends Component {
       const pesanan = res.data;
       this.setState({ pesanan, loading: false });
 
-      // Pesanan sudah dibatalkan/ditolak → tampilkan layar expired
       if (['ditolak', 'batal'].includes(pesanan.status_pesanan)) {
         this.setState({ expired: true, cancelledByStatus: true });
         return;
       }
 
-      // Bukti sudah diupload → redirect ke daftar pesanan
       if (['menunggu_validasi', 'diproses', 'siap_diambil', 'selesai'].includes(pesanan.status_pesanan)) {
         this.setState({ success: true });
         return;
@@ -212,7 +210,6 @@ class UploadBuktiPage extends Component {
 
     return (
       <div className="ub-page">
-        {/* ── NAVBAR ── */}
         <nav className="ub-navbar">
           <Link to="/" className="ub-logo">
             <span className="ub-logo-icon">🍽️</span> IPB Food Hub
@@ -226,7 +223,6 @@ class UploadBuktiPage extends Component {
           </div>
         </nav>
 
-        {/* ── STEPPER ── */}
         <div className="ub-stepper-wrap">
           <div className="ub-stepper">
             {STEPS.map((step, i) => (
@@ -266,7 +262,6 @@ class UploadBuktiPage extends Component {
           </div>
         ) : (
           <main className="ub-main">
-            {/* ═══ LEFT: Payment Info ═══ */}
             <div className="ub-left-card">
               <button className="ub-back-btn" onClick={() => this.props.navigate(-1)}>
                 ← Kembali
@@ -292,7 +287,6 @@ class UploadBuktiPage extends Component {
                 </>
               )}
 
-              {/* Payment method tabs */}
               {methods.length > 0 ? (
                 <>
                   <div className="ub-bank-tabs">
@@ -356,7 +350,6 @@ class UploadBuktiPage extends Component {
                 </div>
               )}
 
-              {/* Items list */}
               {pesanan?.detail_list && (
                 <div className="ub-items-list">
                   <div className="ub-items-title">Rincian Pesanan</div>
@@ -370,7 +363,6 @@ class UploadBuktiPage extends Component {
               )}
             </div>
 
-            {/* ═══ RIGHT: Upload ═══ */}
             <div className="ub-right-card">
               <h2 className="ub-card-title">Upload Bukti Transfer</h2>
 
@@ -392,7 +384,6 @@ class UploadBuktiPage extends Component {
                 </div>
               )}
 
-              {/* Drop zone */}
               <div
                 className={`ub-dropzone ${dragging ? 'dragging' : ''} ${preview ? 'has-file' : ''}`}
                 onDragOver={e => { e.preventDefault(); this.setState({ dragging: true }); }}

@@ -54,7 +54,6 @@ class DashboardUMKMPage extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // Buka modal saat user klik "Pengaturan" dari halaman yang sudah mount
     const wasOpen = prevProps.location?.state?.openProfile;
     const isOpen  = this.props.location?.state?.openProfile;
     if (isOpen && !wasOpen && !this.state.showProfileModal) {
@@ -64,7 +63,6 @@ class DashboardUMKMPage extends Component {
 
   fetchAll = async () => {
     try {
-      // Fetch toko — gracefully handle 404 (user belum punya toko)
       let toko = null;
       try {
         const tokoRes = await umkmAPI.getMyToko();

@@ -11,8 +11,6 @@ from app.schemas.umkm import UMKMCreate, UMKMUpdate, UMKMResponse, UMKMListRespo
 router = APIRouter(prefix="/api/umkm", tags=["UMKM"])
 
 
-# ===== PUBLIC ENDPOINTS =====
-
 @router.get("", response_model=UMKMListResponse)
 def list_umkm(
     page: int = Query(1, ge=1),
@@ -22,7 +20,6 @@ def list_umkm(
     search: str = None,
     db: Session = Depends(get_db),
 ):
-    """Daftar semua UMKM (publik, dengan filter & paginasi)."""
     query = db.query(UMKM)
 
     if kategori:
@@ -43,14 +40,12 @@ def list_umkm(
     )
 
 
-# PENTING: /me/toko harus didefinisikan SEBELUM /{umkm_id}
-# agar FastAPI tidak mencocokkan "me" sebagai umkm_id
+# /me/toko must be defined before /{umkm_id} or FastAPI matches "me" as umkm_id
 @router.get("/me/toko", response_model=UMKMResponse)
 def get_my_umkm(
     current_user: User = Depends(require_role(["umkm"])),
     db: Session = Depends(get_db),
 ):
-    """Mendapatkan data UMKM milik user yang sedang login."""
     umkm = db.query(UMKM).filter(UMKM.pemilik_id == current_user.user_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="Anda belum memiliki UMKM")
@@ -59,14 +54,11 @@ def get_my_umkm(
 
 @router.get("/{umkm_id}", response_model=UMKMResponse)
 def get_umkm(umkm_id: str, db: Session = Depends(get_db)):
-    """Mendapatkan detail satu UMKM berdasarkan ID."""
     umkm = db.query(UMKM).filter(UMKM.umkm_id == umkm_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="UMKM tidak ditemukan")
     return UMKMResponse.model_validate(umkm)
 
-
-# ===== UMKM OWNER ENDPOINTS =====
 
 @router.post("", response_model=UMKMResponse, status_code=201)
 def create_umkm(
@@ -74,8 +66,6 @@ def create_umkm(
     current_user: User = Depends(require_role(["umkm"])),
     db: Session = Depends(get_db),
 ):
-    """Membuat UMKM baru (hanya untuk role umkm)."""
-    # Cek apakah sudah punya UMKM
     existing = db.query(UMKM).filter(UMKM.pemilik_id == current_user.user_id).first()
     if existing:
         raise HTTPException(status_code=400, detail="Anda sudah memiliki UMKM terdaftar")
@@ -103,7 +93,6 @@ def update_umkm(
     current_user: User = Depends(require_role(["umkm", "admin"])),
     db: Session = Depends(get_db),
 ):
-    """Update data UMKM (hanya pemilik atau admin)."""
     umkm = db.query(UMKM).filter(UMKM.umkm_id == umkm_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="UMKM tidak ditemukan")
@@ -124,7 +113,6 @@ def delete_umkm(
     current_user: User = Depends(require_role(["umkm", "admin"])),
     db: Session = Depends(get_db),
 ):
-    """Hapus UMKM (hanya pemilik atau admin)."""
     umkm = db.query(UMKM).filter(UMKM.umkm_id == umkm_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="UMKM tidak ditemukan")
@@ -143,7 +131,6 @@ async def upload_foto_umkm(
     current_user: User = Depends(require_role(["umkm", "admin"])),
     db: Session = Depends(get_db),
 ):
-    """Upload foto profil toko UMKM."""
     umkm = db.query(UMKM).filter(UMKM.umkm_id == umkm_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="UMKM tidak ditemukan")
@@ -163,7 +150,6 @@ async def upload_qris_umkm(
     current_user: User = Depends(require_role(["umkm", "admin"])),
     db: Session = Depends(get_db),
 ):
-    """Upload foto QRIS untuk UMKM."""
     umkm = db.query(UMKM).filter(UMKM.umkm_id == umkm_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="UMKM tidak ditemukan")

@@ -5,7 +5,6 @@ from app.core.database import Base
 
 
 class Menu(Base):
-    """Model Menu - produk makanan/minuman milik UMKM."""
     __tablename__ = "menu"
 
     menu_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -13,9 +12,8 @@ class Menu(Base):
     nama_menu = Column(String(100), nullable=False)
     deskripsi = Column(Text, nullable=True)
     harga = Column(Float, nullable=False)
-    kategori = Column(String(50), nullable=True)  # makanan, minuman, snack
+    kategori = Column(String(50), nullable=True)
     foto_menu = Column(String(255), nullable=True)
     status_ketersediaan = Column(Boolean, default=True)
 
-    # Relationships
     umkm = relationship("UMKM", back_populates="menu_list")

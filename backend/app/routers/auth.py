@@ -20,7 +20,6 @@ def _ip(request: Request) -> str:
 
 @router.post("/register", response_model=TokenResponse, status_code=201)
 def register(data: UserRegister, request: Request, db: Session = Depends(get_db)):
-    """Registrasi user baru (mahasiswa/umkm/admin)."""
     existing = db.query(User).filter(User.email == data.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email sudah terdaftar")
@@ -61,7 +60,7 @@ def register(data: UserRegister, request: Request, db: Session = Depends(get_db)
 def login(request: Request,
           form_data: OAuth2PasswordRequestForm = Depends(),
           db: Session = Depends(get_db)):
-    """Login dengan email (diisi di kolom username pada Swagger) dan password."""
+    # OAuth2PasswordRequestForm uses 'username' field; we accept email there
     ip   = _ip(request)
     user = db.query(User).filter(User.email == form_data.username).first()
 
@@ -85,14 +84,12 @@ def login(request: Request,
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
-    """Mendapatkan data user yang sedang login."""
     return UserResponse.model_validate(current_user)
 
 
 @router.put("/me", response_model=UserResponse)
 def update_me(data: UserUpdate, current_user: User = Depends(get_current_user),
               db: Session = Depends(get_db)):
-    """Update profil user yang sedang login."""
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(current_user, key, value)

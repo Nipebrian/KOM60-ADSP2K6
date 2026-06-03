@@ -123,7 +123,6 @@ class KeranjangPage extends Component {
 
     return (
       <div className="kr-page">
-        {/* ── NAVBAR ── */}
         <nav className="kr-navbar">
           <Link to="/" className="kr-logo">
             <span className="kr-logo-icon">🍽️</span>
@@ -152,10 +151,7 @@ class KeranjangPage extends Component {
             </div>
           ) : (
             <div className="kr-layout">
-              {/* ═══ LEFT ═══ */}
               <div className="kr-left">
-
-                {/* UMKM header bar */}
                 <div className="kr-umkm-bar">
                   <span className="kr-umkm-icon">🏪</span>
                   <div className="kr-umkm-info">
@@ -168,7 +164,6 @@ class KeranjangPage extends Component {
                   </div>
                 </div>
 
-                {/* Items */}
                 <div className="kr-items-card">
                   {cart.map(item => (
                     <div key={item.menu_id} className="kr-item">
@@ -196,7 +191,6 @@ class KeranjangPage extends Component {
                   ))}
                 </div>
 
-                {/* Detail Pengambilan */}
                 <div className="kr-detail-card">
                   <h3 className="kr-section-title">Detail Pengambilan</h3>
                   <div className="kr-form-group">
@@ -224,7 +218,6 @@ class KeranjangPage extends Component {
                 </div>
               </div>
 
-              {/* ═══ RIGHT ═══ */}
               <div className="kr-right">
                 <div className="kr-summary-card">
                   <h3 className="kr-section-title">Ringkasan Pesanan</h3>
@@ -240,7 +233,6 @@ class KeranjangPage extends Component {
 
                   <div className="kr-divider" />
 
-                  {/* Promo / Voucher */}
                   {promos.length > 0 && (
                     <div style={{ marginBottom: 12 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>🏷️ Gunakan Promo</div>

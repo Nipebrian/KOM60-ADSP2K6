@@ -16,7 +16,6 @@ def get_stats(
     current_user: User = Depends(require_role(["admin"])),
     db: Session = Depends(get_db),
 ):
-    """Statistik dashboard admin."""
     total_mahasiswa = db.query(User).filter(User.role == "mahasiswa").count()
     total_umkm_user = db.query(User).filter(User.role == "umkm").count()
     total_umkm = db.query(UMKM).count()
@@ -48,7 +47,6 @@ def list_users(
     current_user: User = Depends(require_role(["admin"])),
     db: Session = Depends(get_db),
 ):
-    """Daftar semua user (admin only)."""
     query = db.query(User)
     if role:
         query = query.filter(User.role == role)
@@ -70,7 +68,6 @@ def update_user_status(
     current_user: User = Depends(require_role(["admin"])),
     db: Session = Depends(get_db),
 ):
-    """Update status user: aktif, suspended, nonaktif (admin only)."""
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User tidak ditemukan")
@@ -89,7 +86,6 @@ def delete_user(
     current_user: User = Depends(require_role(["admin"])),
     db: Session = Depends(get_db),
 ):
-    """Hapus user (admin only)."""
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User tidak ditemukan")

@@ -9,7 +9,7 @@ from jose import JWTError, jwt
 from app.core.config import SECRET_KEY, ALGORITHM, UPLOAD_DIR
 from app.core.database import engine, SessionLocal, Base
 
-# Import semua model agar SQLAlchemy mendaftarkan tabel
+# These imports register all ORM models with SQLAlchemy's metadata
 import app.models.user          # noqa: F401
 import app.models.umkm          # noqa: F401
 import app.models.menu          # noqa: F401
@@ -18,18 +18,17 @@ import app.models.rating        # noqa: F401
 import app.models.promo         # noqa: F401
 from app.models.audit_log import AuditLog  # noqa: F401
 
-# Import routers
 from app.routers import auth, admin, umkm, menu, pesanan, rating, promo, security
 
-# Buat semua tabel hanya saat lokal (di Vercel tabel sudah ada di Neon DB)
+# Tables already exist in Neon DB on Vercel; only auto-create locally
 if not os.getenv("VERCEL"):
     Base.metadata.create_all(bind=engine)
 
 
-# Strip BOM (PowerShell pipe di Windows bisa sisipkan U+FEFF ke env var)
+# Strip BOM — PowerShell on Windows can inject U+FEFF into env vars
 _raw_origins = os.getenv("ALLOWED_ORIGINS", "").lstrip('﻿').strip()
 ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
-# Fallback defaults + selalu sertakan URL production agar CORS tidak putus meski env var salah
+# Always include production URL so CORS doesn't break when env var is misconfigured
 _DEFAULT_ORIGINS = [
     "http://localhost:5173", "http://localhost:3000", "http://localhost:4173",
     "https://ipb-food-hub.vercel.app",
@@ -52,14 +51,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Sajikan file upload (bukti pembayaran, foto profil) — tidak tersedia di Vercel serverless
 import os as _os
 if _os.path.isdir(UPLOAD_DIR):
     app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 def _write_audit_log(user_id, method, endpoint, status_code, ip, user_agent, duration_ms):
-    """Tulis audit log ke DB — dijalankan di background agar tidak blokir response."""
     db = SessionLocal()
     try:
         log = AuditLog(
@@ -79,10 +76,8 @@ def _write_audit_log(user_id, method, endpoint, status_code, ip, user_agent, dur
         db.close()
 
 
-# ── Audit Logging Middleware (Accounting/AAA) ──
 @app.middleware("http")
 async def audit_logging_middleware(request: Request, call_next):
-    # Lewati endpoint non-API sebelum memproses agar tidak ada overhead
     if not request.url.path.startswith("/api/"):
         return await call_next(request)
 
@@ -90,7 +85,6 @@ async def audit_logging_middleware(request: Request, call_next):
     response = await call_next(request)
     duration_ms = int((time.time() - start) * 1000)
 
-    # Ekstrak user_id dari JWT jika ada (tanpa await — pure CPU)
     user_id = None
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
@@ -101,7 +95,7 @@ async def audit_logging_middleware(request: Request, call_next):
         except JWTError:
             pass
 
-    # DB write dijalankan di background — response sudah dikirim ke client
+    # DB write is dispatched to a thread pool — response is already sent to the client
     loop = asyncio.get_event_loop()
     loop.run_in_executor(
         None,
@@ -118,7 +112,6 @@ async def audit_logging_middleware(request: Request, call_next):
     return response
 
 
-# ── Daftarkan semua router ──
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(umkm.router)

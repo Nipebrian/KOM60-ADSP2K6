@@ -8,7 +8,7 @@ engine = create_engine(
     pool_size=1,
     max_overflow=2,
     pool_timeout=20,
-    pool_recycle=60,          # daur ulang koneksi setiap 60 detik (Neon time-out setelah idle)
+    pool_recycle=60,          # Neon drops idle connections; recycle before that happens
     connect_args={
         "connect_timeout": 10,
         "keepalives": 1,
@@ -23,7 +23,6 @@ Base = declarative_base()
 
 
 def get_db():
-    """Dependency yang menyediakan database session per-request."""
     db = SessionLocal()
     try:
         yield db

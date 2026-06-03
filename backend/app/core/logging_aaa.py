@@ -1,15 +1,10 @@
-"""
-Modul AAA Accounting — Logging Aktivitas User
-"""
-
 import json
 import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-# /tmp adalah satu-satunya writable path di Vercel serverless
-_default_log_dir = "/tmp/logs" if os.getenv("VERCEL") else "./logs"
+_default_log_dir = "/tmp/logs" if os.getenv("VERCEL") else "./logs"  # only writable path in Vercel serverless
 LOG_DIR  = os.getenv("AAA_LOG_DIR", _default_log_dir)
 LOG_FILE = os.path.join(LOG_DIR, "aaa_accounting.log")
 
@@ -24,12 +19,11 @@ if not _aaa_logger.handlers:
         _h.setFormatter(logging.Formatter("%(message)s"))
         _aaa_logger.addHandler(_h)
     except OSError:
-        # Filesystem read-only (e.g. Vercel cold start race) — fallback ke stderr
+        # Filesystem may be read-only on Vercel cold start — fall back to stderr
         _aaa_logger.addHandler(logging.StreamHandler())
 
 
 def log_accounting(user_id: str, action: str, details: str = "", ip: str = "") -> None:
-    """Catat satu entri AAA Accounting ke file JSON-line."""
     _aaa_logger.info(json.dumps({
         "ts":      datetime.now(timezone.utc).isoformat(),
         "user_id": user_id,

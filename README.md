@@ -1,103 +1,232 @@
-# IPB Food & UMKM Student Hub 🍔
+# IPB Food Hub
 
-Proyek mata kuliah **KOM 1337 – Analisis dan Desain Sistem** (Kelompok 6 P2).
-Aplikasi *web-based* yang berfungsi sebagai direktori terpusat dan sistem manajemen *pre-order* untuk kantin serta UMKM mahasiswa di Institut Pertanian Bogor (IPB).
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com)
 
-## 👥 Anggota Kelompok (6 P2)
-- Hasan Fadilah (G6401231051) — *Frontend Core + Auth*
-- Hanif Febrian (G6401231070) — *Backend API + Database*
-- Mohammad Mirza Shahbaz Avianto (G6401231143) — *Frontend Fitur + Dashboard*
+A campus food ordering platform for IPB University — browse UMKM stalls, add items to cart, pay via transfer, and track your order in real time.
 
----
-
-## 🛠️ Tech Stack
-- **Frontend**: React.js, Vite
-- **Backend**: FastAPI (Python), SQLAlchemy ORM, Pydantic, JWT Auth
-- **Database**: SQLite (Development) -> PostgreSQL (Production ready)
+**Live:** https://ipb-food-hub.vercel.app &nbsp;|&nbsp; **API:** https://ipb-food-hub-api.vercel.app
 
 ---
 
-## 🏗️ Struktur Proyek
-Repository ini menggunakan arsitektur *monorepo* sederhana:
-```text
-📦 Projek
- ┣ 📂 backend/        # FastAPI Server & Database
- ┃ ┣ 📂 app/          # Core application
- ┃ ┃ ┣ 📂 core/       # Konfigurasi, DB Setup, Security (JWT/Bcrypt)
- ┃ ┃ ┣ 📂 models/     # SQLAlchemy Database Models
- ┃ ┃ ┣ 📂 routers/    # API Endpoints (Controllers)
- ┃ ┃ ┣ 📂 schemas/    # Pydantic Schemas (Data Validation)
- ┃ ┃ ┗ 📜 main.py     # Aplikasi Utama FastAPI
- ┃ ┣ 📜 seed_data.py  # Script untuk injeksi data dummy (demo)
- ┃ ┗ 📜 requirements.txt
- ┣ 📂 frontend/       # React Vite Web App
- ┃ ┣ 📂 src/
- ┃ ┃ ┣ 📂 pages/      # React Views (Login, Home, dll)
- ┃ ┃ ┣ 📂 services/   # Konfigurasi Axios & API Calls
- ┃ ┃ ┗ 📜 main.jsx    # React Entry Point
- ┃ ┣ 📜 package.json
- ┃ ┗ 📜 vite.config.js
- ┗ 📜 README.md
+## Features
+
+**Mahasiswa (Student)**
+- Browse and search UMKM directory with category / status / rating filters
+- View menus, active promotions, and customer reviews per UMKM
+- Add to cart, apply promo discount, set pickup time
+- Upload payment proof (bank transfer / e-wallet / QRIS) with a 5-minute countdown
+- Track order status with a live progress stepper
+- Submit star ratings and written reviews after order completion
+
+**Pelaku UMKM (Merchant)**
+- Manage store profile, opening hours, and payment details
+- Upload store photo and QRIS image via Cloudinary CDN
+- Manage menus (add / edit / toggle availability / upload photo)
+- View and manage incoming orders; verify payment proofs
+- Reply to customer reviews
+- Create and manage time-limited promo campaigns
+
+**Admin**
+- Platform statistics dashboard (users, orders, revenue)
+- User management (list, update status, delete)
+- Security dashboard: AAA statistics and audit log viewer
+
+---
+
+## Tech Stack
+
+| Category | Technology | Purpose |
+|---|---|---|
+| Backend framework | FastAPI + Python 3.12 | REST API, background tasks |
+| Database | Neon PostgreSQL (serverless) | Persistent data store |
+| ORM | SQLAlchemy 2.x | Database models and queries |
+| Auth | JWT (python-jose) + bcrypt | Stateless authentication |
+| Encryption | AES-256-GCM (cryptography) | PII column encryption at rest |
+| Digital signature | RSA-2048 PSS + SHA-256 | Order non-repudiation |
+| File storage | Cloudinary CDN | Image uploads (production) |
+| Frontend | React 19 + Vite | Single-page application |
+| HTTP client | Axios | API calls with JWT interceptor |
+| Deployment | Vercel (two projects) | Frontend + serverless backend |
+
+---
+
+## Architecture
+
+```
+Browser
+  │
+  ▼
+React SPA (Vercel)
+  │  Axios + JWT Bearer
+  ▼
+FastAPI (Vercel Serverless)
+  ├── Auth / RBAC middleware
+  ├── AAA audit logging (async, thread pool)
+  ├── Routers: auth · umkm · menu · pesanan · rating · promo · admin · security
+  │
+  ├──► Neon PostgreSQL   (SQLAlchemy ORM)
+  └──► Cloudinary CDN    (image uploads)
 ```
 
 ---
 
-## 🚀 Cara Menjalankan Aplikasi di Lokal
+## Security
 
-Karena ini adalah aplikasi *Full-stack*, Anda perlu menjalankan *Backend* dan *Frontend* di dua terminal (CMD/PowerShell) yang terpisah.
+The project implements an **AAA (Authentication, Authorization, Accounting)** security module.
 
-### 1. Menjalankan Backend (Terminal 1)
-Buka terminal dan arahkan ke direktori `backend/`:
+| Layer | Implementation |
+|---|---|
+| **Authentication** | JWT HS256 tokens, bcrypt password hashing, login attempt logging |
+| **Authorization** | Role-based `require_role` dependency enforced per endpoint (roles: `mahasiswa`, `umkm`, `admin`) |
+| **Accounting** | Every `/api/*` request is recorded to `audit_logs` asynchronously; structured JSON activity log written to file |
+| **Data encryption** | Sensitive PII columns (phone, NIK, bank account numbers) stored as AES-256-GCM ciphertext via a SQLAlchemy `TypeDecorator` |
+| **Digital signature** | RSA-2048 PSS + SHA-256 for transaction non-repudiation (`app/auth/digital_signature.py`) |
+
+---
+
+## Project Structure
+
+```
+.
+├── backend/
+│   ├── app/
+│   │   ├── main.py              # FastAPI app, CORS, audit middleware
+│   │   ├── core/
+│   │   │   ├── config.py        # Env var loading (BOM-safe helper)
+│   │   │   ├── database.py      # SQLAlchemy engine (Neon-tuned pool)
+│   │   │   ├── security.py      # JWT helpers, get_current_user, require_role
+│   │   │   ├── crypto.py        # AES-256-GCM encrypt/decrypt
+│   │   │   ├── cloudinary_helper.py
+│   │   │   └── logging_aaa.py   # AAA accounting file logger
+│   │   ├── auth/
+│   │   │   └── digital_signature.py  # RSA-2048 sign/verify
+│   │   ├── models/              # SQLAlchemy ORM models
+│   │   ├── schemas/             # Pydantic request/response schemas
+│   │   └── routers/             # FastAPI routers (one per domain)
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/
+│   ├── src/
+│   │   ├── pages/               # React class components (one per page)
+│   │   ├── components/          # Shared components (sidebars, etc.)
+│   │   ├── services/api.js      # Axios instance + all API functions
+│   │   └── utils/
+│   ├── package.json
+│   └── vite.config.js
+└── README.md
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.12+
+- Node.js 18+
+- A [Neon](https://neon.tech) PostgreSQL database
+- A [Cloudinary](https://cloudinary.com) account (optional for local dev)
+
+### Backend Setup
+
 ```bash
 cd backend
-
-# Buat virtual environment
 python -m venv venv
-
-# Aktifkan virtual environment
-# Windows:
-.\venv\Scripts\activate
-# Mac/Linux:
-# source venv/bin/activate
-
-# Install dependensi
+source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# (Opsional) Jalankan script seed untuk mengisi data dummy
-python seed_data.py
+cp .env.example .env              # fill in your secrets
 
-# Jalankan server
-uvicorn app.main:app --reload
+# Generate RSA keypair (run once)
+python -m app.auth.digital_signature
+
+uvicorn app.main:app --reload --port 8000
 ```
-Server backend akan berjalan di: **`http://localhost:8000`**
-Dokumentasi API Interaktif (Swagger) bisa diakses di: **`http://localhost:8000/docs`**
 
-### 2. Menjalankan Frontend (Terminal 2)
-Buka terminal baru dan arahkan ke direktori `frontend/`:
+API docs: http://localhost:8000/docs
+
+### Frontend Setup
+
 ```bash
 cd frontend
-
-# Install dependensi NPM
 npm install
-
-# Jalankan server development
+cp .env.example .env              # set VITE_API_URL if not using the Vite proxy
 npm run dev
 ```
-Aplikasi web akan berjalan di browser pada: **`http://localhost:5173`**
+
+App: http://localhost:5173
+
+### Environment Variables
+
+**Backend (`backend/.env`)**
+
+| Variable | Description | Example |
+|---|---|---|
+| `SECRET_KEY` | JWT signing secret (min 64 chars) | `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host/db?sslmode=require` |
+| `ENCRYPTION_KEY` | AES-256 key, base64-encoded 32 bytes | `python -c "import os,base64; print(base64.b64encode(os.urandom(32)).decode())"` |
+| `RSA_PRIVATE_KEY_PATH` | Path to RSA private key PEM | `./keys/private.pem` |
+| `RSA_PUBLIC_KEY_PATH` | Path to RSA public key PEM | `./keys/public.pem` |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | `my-cloud` |
+| `CLOUDINARY_API_KEY` | Cloudinary API key | `123456789` |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret | `abc...` |
+| `ALLOWED_ORIGINS` | Comma-separated CORS origins | `https://myapp.vercel.app` |
+
+**Frontend (`frontend/.env`)**
+
+| Variable | Description | Example |
+|---|---|---|
+| `VITE_API_URL` | Backend base URL (leave empty to use Vite proxy in dev) | `https://ipb-food-hub-api.vercel.app` |
 
 ---
 
-## 📚 Endpoint API Tersedia (Backend)
-Sistem memiliki 7 modul API utama:
-1. **Auth** (`/api/auth`): Register, Login, Get/Update Profile.
-2. **UMKM** (`/api/umkm`): Direktori UMKM, Registrasi toko, Profil UMKM.
-3. **Menu** (`/api/umkm/{id}/menu`): Manajemen katalog menu per UMKM.
-4. **Pesanan** (`/api/pesanan`): *Pre-order*, update status, upload/validasi bukti pembayaran.
-5. **Rating** (`/api/rating`): Rating bintang dan ulasan antar mahasiswa dan UMKM.
-6. **Promo** (`/api/promo`): Manajemen sistem diskon oleh UMKM.
-7. **Admin** (`/api/admin`): Statistik platform dan manajemen status pengguna.
+## API Overview
 
-Semua detail payload (JSON) dan parameter bisa diuji langsung melalui **Swagger UI** (`http://localhost:8000/docs`).
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/api/auth/register` | — | Register new account |
+| POST | `/api/auth/login` | — | Login, returns JWT |
+| GET | `/api/auth/me` | Bearer | Get current user profile |
+| PUT | `/api/auth/me` | Bearer | Update profile |
+| GET | `/api/umkm` | Bearer | List UMKM (paginated, filterable) |
+| GET | `/api/umkm/{id}` | Bearer | UMKM detail |
+| GET | `/api/umkm/{id}/menu` | Bearer | Menu list for an UMKM |
+| POST | `/api/pesanan` | mahasiswa | Create new order |
+| GET | `/api/pesanan/saya` | mahasiswa | My orders |
+| POST | `/api/pesanan/{id}/bukti` | mahasiswa | Upload payment proof |
+| PUT | `/api/pesanan/{id}/status` | umkm / admin | Update order status |
+| PUT | `/api/pesanan/{id}/verifikasi-bukti` | umkm | Verify payment proof |
+| GET | `/api/rating/umkm/{id}` | Bearer | Reviews for an UMKM |
+| POST | `/api/rating` | mahasiswa | Submit review |
+| GET | `/api/promo` | Bearer | All active promos |
+| GET | `/api/admin/stats` | admin | Platform statistics |
+| GET | `/api/security/stats` | admin | AAA security statistics |
+| GET | `/api/security/audit-logs` | admin | Paginated audit log |
+
+Full interactive docs: https://ipb-food-hub-api.vercel.app/docs
 
 ---
-*Dibuat untuk memenuhi tugas matakuliah Analisis dan Desain Sistem.*
+
+## Deployment
+
+Both services are deployed on **Vercel**:
+
+- **Frontend** — https://ipb-food-hub.vercel.app (Vite static build)
+- **Backend** — https://ipb-food-hub-api.vercel.app (Python serverless functions)
+
+Images are served via **Cloudinary CDN**. The database is hosted on **Neon** (serverless PostgreSQL).
+
+---
+
+## Team
+
+**Kelompok 6 — KOM60 Advanced Data Structures, IPB University 2025/2026**
+
+| Name | Student ID | Role |
+|---|---|---|
+| Hasan Fadilah | G6401231051 | Frontend Core + Auth |
+| Hanif Febrian | G6401231070 | Backend API + Database |
+| Mohammad Mirza Shahbaz Avianto | G6401231143 | Frontend Features + Dashboard |

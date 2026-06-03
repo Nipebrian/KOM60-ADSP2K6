@@ -125,7 +125,6 @@ class PesananPage extends Component {
 
     return (
       <div className="ps-page">
-        {/* ── NAVBAR ── */}
         <nav className="ps-navbar">
           <Link to="/" className="ps-logo">
             <span>🍽️</span> IPB Food Hub
@@ -142,7 +141,6 @@ class PesananPage extends Component {
             <p className="ps-subheading">Pantau status pesanan dan lihat riwayat transaksi Anda.</p>
           </div>
 
-          {/* Tabs */}
           <div className="ps-tabs">
             <button
               className={`ps-tab ${activeTab === 'aktif' ? 'active' : ''}`}
@@ -222,7 +220,6 @@ class PesananPage extends Component {
           )}
         </main>
 
-        {/* ── RATING MODAL ── */}
         {ratingModal && (
           <div className="ps-modal-overlay" onClick={this.closeRating}>
             <div className="ps-modal" onClick={e => e.stopPropagation()}>
@@ -232,7 +229,6 @@ class PesananPage extends Component {
               </div>
               <div className="ps-modal-umkm">{ratingModal.nama_umkm}</div>
 
-              {/* Stars */}
               <div className="ps-star-row">
                 {[1,2,3,4,5].map(s => (
                   <button

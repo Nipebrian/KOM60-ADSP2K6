@@ -1,14 +1,9 @@
 import axios from 'axios';
 
-// Di production: pakai VITE_API_URL atau fallback ke Vercel backend.
-// Di development (Vite dev server): pakai '' agar request lewat proxy lokal di vite.config.js.
+// In dev: empty string routes requests through the Vite proxy configured in vite.config.js
 const API_BASE_URL = import.meta.env.VITE_API_URL ||
   (import.meta.env.DEV ? '' : 'https://ipb-food-hub-api.vercel.app');
 
-/**
- * Konversi path relatif dari backend (/uploads/...) ke URL absolut backend.
- * Blob/data URL dan URL yang sudah absolut dikembalikan apa adanya.
- */
 export const getImageUrl = (path) => {
   if (!path) return null;
   if (/^(blob:|data:|https?:)/.test(path)) return path;
@@ -22,7 +17,6 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Interceptor: tambahkan JWT token ke setiap request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -31,7 +25,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor: handle 401 unauthorized (skip redirect for login endpoint itself)
+// Skip redirect on 401 for the login endpoint itself to avoid an infinite loop
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -45,11 +39,9 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API
 export const authAPI = {
   register: (data) => api.post('/api/auth/register', data),
-  
-  // Login menggunakan format OAuth2 Form Data agar sinkron dengan Swagger UI
+  // OAuth2PasswordRequestForm requires form-encoded body, not JSON
   login: (data) => api.post('/api/auth/login', new URLSearchParams({
     username: data.email,
     password: data.password

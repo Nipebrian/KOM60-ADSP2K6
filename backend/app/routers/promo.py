@@ -12,7 +12,6 @@ router = APIRouter(prefix="/api/promo", tags=["Promo"])
 
 @router.get("", response_model=list[PromoResponse])
 def list_all_promos(db: Session = Depends(get_db)):
-    """Daftar semua promo aktif (publik)."""
     promos = db.query(Promo).filter(Promo.status_aktif == True).order_by(Promo.tanggal_berakhir.desc()).all()
     result = []
     for p in promos:
@@ -24,7 +23,6 @@ def list_all_promos(db: Session = Depends(get_db)):
 
 @router.get("/umkm/{umkm_id}", response_model=list[PromoResponse])
 def list_promos_by_umkm(umkm_id: str, db: Session = Depends(get_db)):
-    """Daftar promo dari UMKM tertentu (publik)."""
     promos = db.query(Promo).filter(Promo.umkm_id == umkm_id).order_by(Promo.tanggal_berakhir.desc()).all()
     result = []
     for p in promos:
@@ -40,7 +38,6 @@ def create_promo(
     current_user: User = Depends(require_role(["umkm"])),
     db: Session = Depends(get_db),
 ):
-    """Membuat promo baru (UMKM owner)."""
     umkm = db.query(UMKM).filter(UMKM.pemilik_id == current_user.user_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="Anda belum memiliki UMKM")
@@ -73,7 +70,6 @@ def update_promo(
     current_user: User = Depends(require_role(["umkm"])),
     db: Session = Depends(get_db),
 ):
-    """Update promo (UMKM owner)."""
     promo = db.query(Promo).filter(Promo.promo_id == promo_id).first()
     if not promo:
         raise HTTPException(status_code=404, detail="Promo tidak ditemukan")
@@ -99,7 +95,6 @@ def delete_promo(
     current_user: User = Depends(require_role(["umkm", "admin"])),
     db: Session = Depends(get_db),
 ):
-    """Hapus promo (UMKM owner atau admin)."""
     promo = db.query(Promo).filter(Promo.promo_id == promo_id).first()
     if not promo:
         raise HTTPException(status_code=404, detail="Promo tidak ditemukan")

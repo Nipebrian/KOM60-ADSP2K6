@@ -1,9 +1,5 @@
-"""
-Modul Kriptografi Simetrik — AES-256-GCM
-
-Format ciphertext yang disimpan di DB (base64):
-  IV(12 byte) || CIPHERTEXT || GCM_TAG(16 byte)
-"""
+# AES-256-GCM symmetric encryption.
+# DB storage format (base64): IV(12 byte) || CIPHERTEXT || GCM_TAG(16 byte)
 
 import os
 import base64
@@ -28,7 +24,6 @@ def _get_key() -> bytes:
 
 
 def encrypt(plaintext: str) -> Optional[str]:
-    """Enkripsi string → base64 ciphertext. None-safe."""
     if plaintext is None:
         return None
     key    = _get_key()
@@ -39,8 +34,7 @@ def encrypt(plaintext: str) -> Optional[str]:
 
 
 def decrypt(ciphertext_b64: str) -> Optional[str]:
-    """Dekripsi base64 ciphertext → plaintext. None-safe.
-    Raise InvalidTag jika data dimodifikasi (GCM integrity check)."""
+    # Raises InvalidTag if ciphertext was tampered (GCM integrity check)
     if ciphertext_b64 is None:
         return None
     key    = _get_key()

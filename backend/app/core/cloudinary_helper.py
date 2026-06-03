@@ -23,10 +23,6 @@ if USE_CLOUDINARY:
 
 
 async def upload_image(file: UploadFile, folder: str = "ipb-food-hub") -> str:
-    """
-    Upload gambar ke Cloudinary (jika dikonfigurasi) atau ke lokal sebagai fallback.
-    Mengembalikan URL permanen yang aman disimpan di database.
-    """
     ext = os.path.splitext(file.filename or '')[1].lower()
     if ext not in ALLOWED_IMG_EXT:
         raise HTTPException(
@@ -49,7 +45,7 @@ async def upload_image(file: UploadFile, folder: str = "ipb-food-hub") -> str:
         )
         return result["secure_url"]
 
-    # Fallback: simpan ke lokal (hanya untuk development)
+    # Fallback: local disk — only usable in development
     filename = f"{uuid.uuid4()}{ext}"
     with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
         f.write(contents)

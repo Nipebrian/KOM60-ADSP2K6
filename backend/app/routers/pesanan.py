@@ -19,7 +19,6 @@ router = APIRouter(prefix="/api/pesanan", tags=["Pesanan"])
 
 
 def _build_pesanan_response(pesanan: Pesanan) -> PesananResponse:
-    """Helper: konversi ORM Pesanan ke PesananResponse termasuk nested relations."""
     detail_list = []
     for d in pesanan.detail_list:
         dr = DetailPesananResponse.model_validate(d)
@@ -59,22 +58,18 @@ def _build_pesanan_response(pesanan: Pesanan) -> PesananResponse:
     )
 
 
-# ===== MAHASISWA ENDPOINTS =====
-
 @router.post("", response_model=PesananResponse, status_code=201)
 def create_pesanan(
     data: PesananCreate,
     current_user: User = Depends(require_role(["mahasiswa"])),
     db: Session = Depends(get_db),
 ):
-    """Membuat pesanan baru (mahasiswa)."""
     umkm = db.query(UMKM).filter(UMKM.umkm_id == data.umkm_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="UMKM tidak ditemukan")
     if umkm.status_operasional != "buka":
         raise HTTPException(status_code=400, detail="UMKM sedang tidak buka")
 
-    # Buat pesanan
     pesanan = Pesanan(
         mahasiswa_id=current_user.user_id,
         umkm_id=data.umkm_id,
@@ -108,7 +103,7 @@ def create_pesanan(
 
     pesanan.total_harga = total
 
-    # Terapkan promo: kurangi total_harga langsung (tidak perlu kolom baru di DB)
+    # Apply promo: discount is computed on-the-fly to avoid adding a DB column
     if data.promo_id:
         from datetime import datetime, timezone as tz
         promo = db.query(Promo).filter(
@@ -124,7 +119,6 @@ def create_pesanan(
             total = max(0.0, total - diskon)
             pesanan.total_harga = total
 
-    # Buat record pembayaran (kosong, akan diisi saat upload bukti)
     pembayaran = Pembayaran(
         pesanan_id=pesanan.pesanan_id,
         jumlah_bayar=total,
@@ -144,7 +138,6 @@ def get_my_pesanan(
     current_user: User = Depends(require_role(["mahasiswa"])),
     db: Session = Depends(get_db),
 ):
-    """Daftar pesanan milik mahasiswa yang sedang login."""
     query = db.query(Pesanan).options(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
@@ -165,7 +158,6 @@ def get_pesanan(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Detail pesanan (mahasiswa pemilik atau UMKM terkait)."""
     pesanan = db.query(Pesanan).options(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
@@ -176,7 +168,6 @@ def get_pesanan(
     if not pesanan:
         raise HTTPException(status_code=404, detail="Pesanan tidak ditemukan")
 
-    # Cek akses: hanya mahasiswa pemilik, UMKM terkait, atau admin
     is_owner = pesanan.mahasiswa_id == current_user.user_id
     is_umkm = pesanan.umkm and pesanan.umkm.pemilik_id == current_user.user_id
     if not is_owner and not is_umkm and current_user.role != "admin":
@@ -184,8 +175,6 @@ def get_pesanan(
 
     return _build_pesanan_response(pesanan)
 
-
-# ===== UPLOAD BUKTI PEMBAYARAN =====
 
 @router.post("/{pesanan_id}/bukti", response_model=PesananResponse)
 async def upload_bukti_pembayaran(
@@ -195,7 +184,6 @@ async def upload_bukti_pembayaran(
     current_user: User = Depends(require_role(["mahasiswa"])),
     db: Session = Depends(get_db),
 ):
-    """Upload bukti pembayaran (mahasiswa)."""
     pesanan = db.query(Pesanan).options(
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
@@ -213,20 +201,16 @@ async def upload_bukti_pembayaran(
 
     foto_url = await upload_image(file, folder="ipb-food-hub/bukti")
 
-    # Update pembayaran
     pembayaran = pesanan.pembayaran
     pembayaran.metode_pembayaran = metode_pembayaran
     pembayaran.tanggal_bayar = datetime.now(timezone.utc)
     pembayaran.status_pembayaran = "menunggu_validasi"
 
-    # Simpan bukti
     bukti = BuktiPembayaran(
         pembayaran_id=pembayaran.pembayaran_id,
         foto_url=foto_url,
     )
     pembayaran.bukti = bukti
-
-    # Update status pesanan
     pesanan.status_pesanan = "menunggu_validasi"
 
     db.commit()
@@ -240,7 +224,6 @@ def batal_pesanan(
     current_user: User = Depends(require_role(["mahasiswa"])),
     db: Session = Depends(get_db),
 ):
-    """Batalkan pesanan yang belum dibayar karena timeout (mahasiswa pemilik)."""
     pesanan = db.query(Pesanan).options(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
@@ -265,15 +248,12 @@ def batal_pesanan(
     return _build_pesanan_response(pesanan)
 
 
-# ===== UMKM ENDPOINTS =====
-
 @router.get("/umkm/masuk", response_model=list[PesananResponse])
 def get_pesanan_masuk(
     status: str = None,
     current_user: User = Depends(require_role(["umkm"])),
     db: Session = Depends(get_db),
 ):
-    """Daftar pesanan masuk ke UMKM milik user (pelaku UMKM)."""
     umkm = db.query(UMKM).filter(UMKM.pemilik_id == current_user.user_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="Anda belum memiliki UMKM")
@@ -299,7 +279,6 @@ def update_status_pesanan(
     current_user: User = Depends(require_role(["umkm", "admin"])),
     db: Session = Depends(get_db),
 ):
-    """Update status pesanan (UMKM owner atau admin)."""
     pesanan = db.query(Pesanan).options(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
@@ -324,7 +303,6 @@ def update_status_pesanan(
 
     pesanan.status_pesanan = data.status_pesanan
 
-    # Jika pesanan ditolak, update juga status pembayaran
     if data.status_pesanan == "ditolak" and pesanan.pembayaran:
         pesanan.pembayaran.status_pembayaran = "ditolak"
 
@@ -340,7 +318,6 @@ def verifikasi_bukti(
     current_user: User = Depends(require_role(["umkm"])),
     db: Session = Depends(get_db),
 ):
-    """Verifikasi bukti pembayaran (UMKM owner)."""
     pesanan = db.query(Pesanan).options(
         joinedload(Pesanan.detail_list).joinedload(DetailPesanan.menu),
         joinedload(Pesanan.pembayaran).joinedload(Pembayaran.bukti),
@@ -367,7 +344,7 @@ def verifikasi_bukti(
         pesanan.status_pesanan = "diproses"
     elif data.status_verifikasi == "ditolak":
         pesanan.pembayaran.status_pembayaran = "ditolak"
-        pesanan.status_pesanan = "menunggu_pembayaran"  # Beri kesempatan upload ulang
+        pesanan.status_pesanan = "menunggu_pembayaran"  # Allow mahasiswa to re-upload proof
 
     db.commit()
     db.refresh(pesanan)

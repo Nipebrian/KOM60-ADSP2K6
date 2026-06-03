@@ -1,8 +1,5 @@
-"""
-RSA-2048 PSS + SHA-256 untuk non-repudiation pada transaksi pesanan.
-
-Setup (jalankan sekali): python -m app.auth.digital_signature
-"""
+# RSA-2048 PSS + SHA-256 for transaction non-repudiation.
+# One-time setup: python -m app.auth.digital_signature
 
 import base64
 from pathlib import Path

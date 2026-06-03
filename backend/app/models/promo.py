@@ -6,7 +6,6 @@ from app.core.database import Base
 
 
 class Promo(Base):
-    """Model Promo - promosi/diskon dari UMKM."""
     __tablename__ = "promo"
 
     promo_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -19,5 +18,4 @@ class Promo(Base):
     status_aktif = Column(Boolean, default=True)
     syarat_ketentuan = Column(Text, nullable=True)
 
-    # Relationships
     umkm = relationship("UMKM", back_populates="promo_list")

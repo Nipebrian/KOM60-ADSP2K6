@@ -74,7 +74,6 @@ class DetailUMKMPage extends Component {
     }
   };
 
-  // Cart actions
   syncCartToLocalStorage = (cart) => {
     const { umkm } = this.state;
     const items = Object.values(cart).map(({ item, qty }) => ({
@@ -377,7 +376,6 @@ class DetailUMKMPage extends Component {
 
     return (
       <div>
-        {/* ── NAVBAR ── */}
         <nav className="det-navbar">
           <Link to="/direktori" className="det-back-btn" title="Kembali">←</Link>
           <Link to="/" className="det-nav-brand">IPB Food Hub</Link>
@@ -388,7 +386,6 @@ class DetailUMKMPage extends Component {
           </div>
         </nav>
 
-        {/* ── BANNER ── */}
         <div className="det-banner">
           {umkm.foto_toko
             ? <img
@@ -400,9 +397,7 @@ class DetailUMKMPage extends Component {
           }
         </div>
 
-        {/* ── CONTENT ── */}
         <div className="det-content">
-          {/* Info card */}
           <div className="det-info-card">
             <div className="det-info-left">
               <div className="det-info-tags">
@@ -440,9 +435,7 @@ class DetailUMKMPage extends Component {
             </button>
           </div>
 
-          {/* Main grid */}
           <div className="det-main-grid">
-            {/* Left: Tabs */}
             <div className="det-tabs">
               <div className="det-tab-bar">
                 {['menu', 'ulasan', 'promo'].map((tab) => (
@@ -463,7 +456,6 @@ class DetailUMKMPage extends Component {
               </div>
             </div>
 
-            {/* Right: Sidebar */}
             <div className="det-sidebar">
               <div className="det-sidebar-card">
                 <div className="det-sidebar-title">Informasi Warung</div>
@@ -508,7 +500,6 @@ class DetailUMKMPage extends Component {
           </div>
         </div>
 
-        {/* ── FLOATING CART BAR ── */}
         {cartCount > 0 && (
           <div className="det-cart-bar">
             <div className="det-cart-info">

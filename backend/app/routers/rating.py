@@ -17,7 +17,6 @@ def list_ratings(
     nilai: int = None,
     db: Session = Depends(get_db),
 ):
-    """Daftar ulasan untuk UMKM tertentu (publik)."""
     query = db.query(Rating).filter(Rating.umkm_id == umkm_id)
     if nilai:
         query = query.filter(Rating.nilai == nilai)
@@ -33,7 +32,6 @@ def list_ratings(
 
 @router.get("/umkm/{umkm_id}/summary", response_model=RatingSummary)
 def rating_summary(umkm_id: str, db: Session = Depends(get_db)):
-    """Ringkasan statistik rating UMKM."""
     ratings = db.query(Rating).filter(Rating.umkm_id == umkm_id).all()
     total = len(ratings)
     if total == 0:
@@ -59,7 +57,6 @@ def create_rating(
     current_user: User = Depends(require_role(["mahasiswa"])),
     db: Session = Depends(get_db),
 ):
-    """Membuat ulasan baru (mahasiswa)."""
     umkm = db.query(UMKM).filter(UMKM.umkm_id == data.umkm_id).first()
     if not umkm:
         raise HTTPException(status_code=404, detail="UMKM tidak ditemukan")
@@ -67,7 +64,6 @@ def create_rating(
     if data.nilai < 1 or data.nilai > 5:
         raise HTTPException(status_code=400, detail="Nilai rating harus 1-5")
 
-    # Cek duplikat rating untuk pesanan yang sama
     if data.pesanan_id:
         existing = db.query(Rating).filter(
             Rating.mahasiswa_id == current_user.user_id,
@@ -85,7 +81,6 @@ def create_rating(
     )
     db.add(rating)
 
-    # Update rata-rata rating UMKM
     all_ratings = db.query(Rating).filter(Rating.umkm_id == data.umkm_id).all()
     total_nilai = sum(r.nilai for r in all_ratings) + data.nilai
     total_count = len(all_ratings) + 1
@@ -106,7 +101,6 @@ def balas_rating(
     current_user: User = Depends(require_role(["umkm"])),
     db: Session = Depends(get_db),
 ):
-    """Membalas ulasan (UMKM owner)."""
     rating = db.query(Rating).filter(Rating.rating_id == rating_id).first()
     if not rating:
         raise HTTPException(status_code=404, detail="Rating tidak ditemukan")
@@ -130,7 +124,6 @@ def delete_rating(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Hapus rating (mahasiswa pemilik atau admin)."""
     rating = db.query(Rating).filter(Rating.rating_id == rating_id).first()
     if not rating:
         raise HTTPException(status_code=404, detail="Rating tidak ditemukan")
@@ -143,7 +136,6 @@ def delete_rating(
     umkm_id = rating.umkm_id
     db.delete(rating)
 
-    # Recalculate rata-rata
     umkm = db.query(UMKM).filter(UMKM.umkm_id == umkm_id).first()
     remaining = db.query(Rating).filter(Rating.umkm_id == umkm_id).all()
     if remaining:

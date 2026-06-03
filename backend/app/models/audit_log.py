@@ -5,7 +5,6 @@ from app.core.database import Base
 
 
 class AuditLog(Base):
-    """Model AuditLog - mencatat setiap aktivitas API (Accounting/AAA)."""
     __tablename__ = "audit_logs"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))

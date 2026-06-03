@@ -53,7 +53,6 @@ class LoginPage extends Component {
 
     return (
       <div className="auth-wrapper">
-        {/* ── LEFT PANEL ── */}
         <div className="auth-left">
           <div className="auth-left-logo">
             <span className="logo-icon">🍽️</span>
@@ -68,7 +67,6 @@ class LoginPage extends Component {
           </div>
         </div>
 
-        {/* ── RIGHT PANEL ── */}
         <div className="auth-right">
           <div className="auth-card">
             <h1>Selamat Datang!</h1>
@@ -77,7 +75,6 @@ class LoginPage extends Component {
             {error && <div className="auth-error">{error}</div>}
 
             <form onSubmit={this.handleSubmit}>
-              {/* Email */}
               <div className="form-group">
                 <label htmlFor="email">Email</label>
                 <div className="input-wrap">
@@ -95,7 +92,6 @@ class LoginPage extends Component {
                 </div>
               </div>
 
-              {/* Password */}
               <div className="form-group">
                 <label htmlFor="password">Password</label>
                 <div className="input-wrap">

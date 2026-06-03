@@ -31,11 +31,9 @@ def get_security_stats(
     db: Session = Depends(get_db),
     _current: User = Depends(require_role(["admin"])),
 ):
-    """Statistik keamanan AAA: Authentication, Authorization, Accounting."""
     today = _today()
     week = _week_start()
 
-    # ── Authentication stats ──
     login_base = db.query(AuditLog).filter(
         AuditLog.endpoint == "/api/auth/login",
         AuditLog.method == "POST",
@@ -51,7 +49,6 @@ def get_security_stats(
     ).count()
     success_rate = round((successful / total_attempts * 100) if total_attempts > 0 else 0.0, 1)
 
-    # ── Authorization stats ──
     total_today = db.query(AuditLog).filter(AuditLog.created_at >= today).count()
     access_denied_today = db.query(AuditLog).filter(
         AuditLog.created_at >= today, AuditLog.status_code == 403
@@ -63,10 +60,8 @@ def get_security_stats(
     )
     total_all = db.query(AuditLog).count()
 
-    # ── Accounting stats ──
     logs_week = db.query(AuditLog).filter(AuditLog.created_at >= week).count()
 
-    # ── Role distribution ──
     role_rows = db.query(User.role, func.count(User.user_id)).group_by(User.role).all()
     role_map = {r: c for r, c in role_rows}
 
@@ -109,7 +104,6 @@ def get_audit_logs(
     db: Session = Depends(get_db),
     _current: User = Depends(require_role(["admin"])),
 ):
-    """Daftar audit log (paginated) - hanya admin."""
     q = db.query(AuditLog)
     if method:
         q = q.filter(AuditLog.method == method.upper())
@@ -128,7 +122,6 @@ def get_audit_logs(
         .all()
     )
 
-    # Join user info
     items = []
     for log in logs:
         user_obj = (

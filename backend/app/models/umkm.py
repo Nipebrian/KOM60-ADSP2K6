@@ -6,7 +6,6 @@ from app.core.database import Base
 
 
 class UMKM(Base):
-    """Model UMKM - toko/usaha milik PelakuUMKM."""
     __tablename__ = "umkm"
 
     umkm_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -14,14 +13,13 @@ class UMKM(Base):
     nama_umkm = Column(String(100), nullable=False)
     deskripsi = Column(Text, nullable=True)
     alamat = Column(String(255), nullable=False)
-    kategori = Column(String(50), nullable=False)  # makanan_berat, minuman, snack, dll
-    jam_buka = Column(String(10), nullable=True)    # format: "08:00"
-    jam_tutup = Column(String(10), nullable=True)   # format: "21:00"
+    kategori = Column(String(50), nullable=False)
+    jam_buka = Column(String(10), nullable=True)
+    jam_tutup = Column(String(10), nullable=True)
     foto_toko = Column(String(255), nullable=True)
-    status_operasional = Column(String(20), default="buka")  # buka, tutup, libur
+    status_operasional = Column(String(20), default="buka")
     tanggal_dibuat = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     rating_rata_rata = Column(Float, default=0.0)
-    # Metode pembayaran
     nomor_rekening = Column(String(50), nullable=True)
     nama_bank = Column(String(100), nullable=True)
     nomor_ewallet = Column(String(50), nullable=True)
@@ -31,7 +29,6 @@ class UMKM(Base):
     def nama_pemilik(self):
         return self.pemilik.nama if self.pemilik else None
 
-    # Relationships
     pemilik = relationship("User", backref="umkm")
     menu_list = relationship("Menu", back_populates="umkm", cascade="all, delete-orphan")
     promo_list = relationship("Promo", back_populates="umkm", cascade="all, delete-orphan")
