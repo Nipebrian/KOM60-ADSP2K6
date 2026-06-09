@@ -20,7 +20,8 @@ def _ip(request: Request) -> str:
 
 @router.post("/register", response_model=TokenResponse, status_code=201)
 def register(data: UserRegister, request: Request, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.email == data.email).first()
+    normalized_email = data.email.lower().strip()
+    existing = db.query(User).filter(User.email == normalized_email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email sudah terdaftar")
 
@@ -29,7 +30,7 @@ def register(data: UserRegister, request: Request, db: Session = Depends(get_db)
 
     user = User(
         nama=data.nama,
-        email=data.email,
+        email=normalized_email,
         password=get_password_hash(data.password),
         no_telp=data.no_telp,
         role=data.role,
@@ -62,15 +63,16 @@ def login(request: Request,
           db: Session = Depends(get_db)):
     # OAuth2PasswordRequestForm uses 'username' field; we accept email there
     ip   = _ip(request)
-    user = db.query(User).filter(User.email == form_data.username).first()
+    normalized_email = form_data.username.lower().strip()
+    user = db.query(User).filter(User.email == normalized_email).first()
 
     if not user or not verify_password(form_data.password, user.password):
-        log_login_attempt(email=form_data.username, success=False,
+        log_login_attempt(email=normalized_email, success=False,
                           ip=ip, reason="invalid_credentials")
         raise HTTPException(status_code=401, detail="Email atau password salah")
 
     if user.status != "aktif":
-        log_login_attempt(email=form_data.username, success=False,
+        log_login_attempt(email=normalized_email, success=False,
                           ip=ip, reason=f"account_status={user.status}")
         raise HTTPException(status_code=403, detail="Akun tidak aktif")
 
