@@ -5,7 +5,7 @@ import json
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from app.core.cloudinary_helper import upload_image
-from app.auth.digital_signature import sign_message
+from app.auth.digital_signature import sign_message, verify_signature
 from app.models.user import User
 from app.models.umkm import UMKM
 from app.models.menu import Menu
@@ -123,10 +123,10 @@ def create_pesanan(
             pesanan.total_harga = total
 
     try:
+        # Payload hanya pesanan_id + total_harga agar bisa diverifikasi ulang kapan saja
         payload = json.dumps({
             "pesanan_id": pesanan.pesanan_id,
             "total_harga": total,
-            "ts": datetime.now(timezone.utc).isoformat(),
         }, sort_keys=True)
         pesanan.tanda_tangan = sign_message(payload)
     except Exception:
@@ -187,6 +187,42 @@ def get_pesanan(
         raise HTTPException(status_code=403, detail="Akses ditolak")
 
     return _build_pesanan_response(pesanan)
+
+
+@router.get("/{pesanan_id}/verify-signature")
+def verify_pesanan_signature(
+    pesanan_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    pesanan = db.query(Pesanan).options(
+        joinedload(Pesanan.umkm),
+    ).filter(Pesanan.pesanan_id == pesanan_id).first()
+
+    if not pesanan:
+        raise HTTPException(status_code=404, detail="Pesanan tidak ditemukan")
+
+    is_owner = pesanan.mahasiswa_id == current_user.user_id
+    is_umkm = pesanan.umkm and pesanan.umkm.pemilik_id == current_user.user_id
+    if not is_owner and not is_umkm and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    if not pesanan.tanda_tangan:
+        return {"pesanan_id": pesanan_id, "valid": False, "reason": "Tidak ada tanda tangan"}
+
+    payload = json.dumps({
+        "pesanan_id": pesanan.pesanan_id,
+        "total_harga": pesanan.total_harga,
+    }, sort_keys=True)
+
+    valid = verify_signature(payload, pesanan.tanda_tangan)
+    return {
+        "pesanan_id": pesanan_id,
+        "total_harga": pesanan.total_harga,
+        "payload_yang_ditandatangani": payload,
+        "tanda_tangan_preview": pesanan.tanda_tangan[:40] + "...",
+        "valid": valid,
+    }
 
 
 @router.post("/{pesanan_id}/bukti", response_model=PesananResponse)
