@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query, Form
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime, timezone
+import json
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from app.core.cloudinary_helper import upload_image
+from app.auth.digital_signature import sign_message
 from app.models.user import User
 from app.models.umkm import UMKM
 from app.models.menu import Menu
@@ -50,6 +52,7 @@ def _build_pesanan_response(pesanan: Pesanan) -> PesananResponse:
         nama_umkm=pesanan.umkm.nama_umkm if pesanan.umkm else None,
         tanggal_pesan=pesanan.tanggal_pesan,
         total_harga=pesanan.total_harga,
+        tanda_tangan=pesanan.tanda_tangan,
         status_pesanan=pesanan.status_pesanan,
         catatan_pesanan=pesanan.catatan_pesanan,
         waktu_pengambilan=pesanan.waktu_pengambilan,
@@ -118,6 +121,16 @@ def create_pesanan(
             diskon = round(total * promo.diskon_persen / 100, 0)
             total = max(0.0, total - diskon)
             pesanan.total_harga = total
+
+    try:
+        payload = json.dumps({
+            "pesanan_id": pesanan.pesanan_id,
+            "total_harga": total,
+            "ts": datetime.now(timezone.utc).isoformat(),
+        }, sort_keys=True)
+        pesanan.tanda_tangan = sign_message(payload)
+    except Exception:
+        pesanan.tanda_tangan = None
 
     pembayaran = Pembayaran(
         pesanan_id=pesanan.pesanan_id,

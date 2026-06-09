@@ -44,6 +44,7 @@ class PesananResponse(BaseModel):
     nama_umkm: Optional[str] = None
     tanggal_pesan: Optional[datetime] = None
     total_harga: float
+    tanda_tangan: Optional[str] = None
     status_pesanan: str
     catatan_pesanan: Optional[str] = None
     waktu_pengambilan: Optional[datetime] = None
